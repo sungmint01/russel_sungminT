@@ -650,7 +650,7 @@ textarea.inp{resize:vertical;min-height:68px}
         <div class="fg"><label class="fl">회차</label><input class="inp" id="bmNum" type="number" min="1" placeholder="자동"></div>
       </div>
       <div class="fg"><label class="fl">진도</label><input class="inp" id="bmProg" type="text" placeholder="예: 수I 삼각함수 3단원"></div>
-      <div class="fg"><label class="fl">오늘 숙제 *</label><input class="inp" id="bmHwC" type="text" placeholder="숙제 내용을 입력하세요"></div>
+      <div class="fg"><label class="fl">오늘 숙제</label><input class="inp" id="bmHwC" type="text" placeholder="숙제 내용 (선택)"></div>
       <div class="fg"><label class="fl">학부모 전달 메모</label><textarea class="inp" id="bmNote" placeholder="선택 사항"></textarea></div>
     </div>
     <div class="mf"><button class="btn-cn" onclick="closeBM()">취소</button><button class="btn-sv" onclick="saveBulkHW()">반 전체 등록</button></div>
@@ -3213,8 +3213,7 @@ async function saveBulkHW(){
   if(!bmSelectedClass){alert('반을 선택하세요');return;}
   const date=document.getElementById('bmDate').value;
   if(!date){alert('날짜를 입력하세요');return;}
-  const hwC=document.getElementById('bmHwC').value.trim();
-  if(!hwC){alert('숙제 내용을 입력하세요');return;}
+  const hwC=document.getElementById('bmHwC').value.trim();   // 선택 입력
   const targets=Object.entries(students).filter(([,s])=>(s.cls||'미지정')===bmSelectedClass);
   if(!targets.length){alert('해당 반에 학생이 없습니다');return;}
   const btn=document.querySelector('#bm .btn-sv');
@@ -3263,7 +3262,8 @@ async function saveBulkHW(){
         await db.ref('smSessions/'+stuId+'/'+targetKey+'/upd').set(Date.now());
       }else{
         // 해당 날짜 세션 없음 → 새로 생성 (최소 필드만)
-        const newSes={date,hwC,eval:null,at:Date.now(),upd:Date.now()};
+        const newSes={date,eval:null,at:Date.now(),upd:Date.now()};
+        if(hwC) newSes.hwC=hwC;
         if(num) newSes.num=num;
         if(bmProg) newSes.prog=bmProg;
         if(bmNote) newSes.note=bmNote;
