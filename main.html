@@ -31,7 +31,7 @@
       radial-gradient(circle at 88% 92%,rgba(139,127,217,.14) 0%,transparent 45%),
       radial-gradient(circle at 78% 12%,rgba(157,217,196,.08) 0%,transparent 38%);
   }
-  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:38px;animation:rise .7s var(--spring) both}
+  .wrap{width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:30px;animation:rise .7s var(--spring) both}
   @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
   .hero{text-align:center}
@@ -51,19 +51,19 @@
   .logo-divider{width:40px;height:3px;background:linear-gradient(90deg,var(--rose),var(--lav));border-radius:2px;margin:16px auto 14px}
   .logo-sub{font-size:14px;font-weight:400;color:var(--ink2);letter-spacing:-.2px}
 
-  .wide-wrap{display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%}
+  .wide-wrap{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;max-width:372px;margin:0 auto}
   .card-wide{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:13px;text-decoration:none;aspect-ratio:1;
-    background:var(--surface);border-radius:26px;padding:20px 14px;
+    gap:11px;text-decoration:none;aspect-ratio:1;
+    background:var(--surface);border-radius:24px;padding:18px 13px;
     box-shadow:var(--sh-md);border:1px solid rgba(255,255,255,.8);
     transition:transform .35s var(--spring),box-shadow .35s ease;
     position:relative;overflow:hidden;text-align:center;
   }
   .card-wide::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .35s;
     background:linear-gradient(150deg,transparent 45%,rgba(240,166,196,.10))}
-  .card-wide::after{content:'';position:absolute;width:130px;height:130px;border-radius:50%;
-    top:-58px;right:-46px;transition:transform .45s var(--spring)}
+  .card-wide::after{content:'';position:absolute;width:118px;height:118px;border-radius:50%;
+    top:-52px;right:-40px;transition:transform .45s var(--spring)}
   .card-wide:nth-child(1)::after{background:radial-gradient(circle,rgba(139,127,217,.13),transparent 70%)}
   .card-wide:nth-child(2)::after{background:radial-gradient(circle,rgba(240,166,196,.15),transparent 70%)}
   .card-wide:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
@@ -71,27 +71,27 @@
   .card-wide:hover::after{transform:scale(1.2)}
   .card-wide:active{transform:translateY(-2px) scale(.98)}
   .wide-icon{
-    position:relative;width:62px;height:62px;border-radius:21px;
+    position:relative;width:56px;height:56px;border-radius:19px;
     display:flex;align-items:center;justify-content:center;
-    font-size:28px;flex-shrink:0;transition:transform .35s var(--spring);
+    font-size:26px;flex-shrink:0;transition:transform .35s var(--spring);
     box-shadow:0 4px 14px rgba(120,105,205,.14),inset 0 1px 0 rgba(255,255,255,.7);
   }
   .card-wide:nth-child(1) .wide-icon{background:linear-gradient(140deg,#F2EEFD,#DFD6F8)}
   .card-wide:nth-child(2) .wide-icon{background:linear-gradient(140deg,#FDE7F1,#FACFE0)}
   .card-wide:hover .wide-icon{transform:scale(1.09) rotate(-4deg)}
-  .wide-title{position:relative;font-weight:800;font-size:17px;color:var(--ink);letter-spacing:-.4px;margin-bottom:5px}
-  .wide-desc{position:relative;font-size:11px;font-weight:500;color:var(--ink3);letter-spacing:-.2px;line-height:1.55}
+  .wide-title{position:relative;font-weight:800;font-size:16px;color:var(--ink);letter-spacing:-.4px;margin-bottom:5px}
+  .wide-desc{position:relative;font-size:10.5px;font-weight:500;color:var(--ink3);letter-spacing:-.2px;line-height:1.5}
   .wide-pill{
     position:relative;background:var(--lav-tint);border-radius:99px;
-    width:26px;height:26px;display:flex;align-items:center;justify-content:center;
-    color:var(--lav);font-size:14px;flex-shrink:0;font-weight:700;
+    width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    color:var(--lav);font-size:13px;flex-shrink:0;font-weight:700;
     transition:transform .35s var(--spring),background .3s;
   }
   .card-wide:hover .wide-pill{background:var(--lav);color:#fff;transform:translateY(2px)}
   @media(max-width:340px){
-    .wide-icon{width:54px;height:54px;font-size:24px;border-radius:18px}
-    .wide-title{font-size:15.5px}
-    .wide-desc{font-size:10px}
+    .wide-icon{width:44px;height:44px;font-size:20px;border-radius:15px}
+    .wide-title{font-size:13.5px}
+    .wide-desc{font-size:9.5px}
   }
 
   .footer{font-size:10px;color:var(--ink3);letter-spacing:2.5px;font-weight:600}

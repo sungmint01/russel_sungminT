@@ -431,7 +431,9 @@ function doLogout(){
 function tryAutoLogin(){
   var sid, hash;
   try{ sid=sessionStorage.getItem('stuId'); hash=sessionStorage.getItem('stuHash'); }catch(e){}
-  if(!sid||!hash||!db) return false;
+  if(!sid||!hash) return false;
+  if(!db) db=getDB();          // 자동 로그인 시점에는 아직 db가 없다
+  if(!db) return false;
   db.ref('smStudents/'+sid).once('value',function(sn){
     var v=sn.val();
     if(!v||v.studentPwHash!==hash){
@@ -903,7 +905,14 @@ function renderYtPanel(tb){
   function doCheck(){var db=getDB();if(!db||_smvRef)return;_smvRef=db.ref('smAppVersion');_smvRef.on('value',function(s){var sv=String(s.val()||'');if(!sv)return;var lv=localStorage.getItem('smv')||'';if(lv===sv)return;if(location.search.indexOf('_v='+sv)!==-1)return;location.replace(location.pathname+'?_v='+sv);});}
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',doCheck);}else{doCheck();}
   // DB 준비 후 자동 로그인 시도
-  setTimeout(function(){ try{ tryAutoLogin(); }catch(e){} }, 300);
+  (function(){
+    var tries=0;
+    (function attempt(){
+      var ok=false;
+      try{ ok=tryAutoLogin(); }catch(e){}
+      if(!ok && ++tries<20) setTimeout(attempt,150);   // 최대 3초간 재시도
+    })();
+  })();
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')doCheck();});
 })();
 </script>
