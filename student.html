@@ -253,6 +253,24 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .badge-plan{background:#eff6ff;color:#2563eb}
 .badge-done{background:#f0fdf4;color:#15803d}
 .section-title{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:15px;margin-bottom:10px;color:#374151}
+
+/* ── 하단 탭바 (student.html / textbook_q.html 동일 · 수정 시 양쪽 함께 교체) ── */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+  border-top:1px solid rgba(139,127,217,.13);
+  box-shadow:0 -4px 20px -8px rgba(120,105,205,.18);
+  padding:7px 0 calc(9px + env(safe-area-inset-bottom))}
+.tabbar a{flex:1;text-decoration:none;text-align:center;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.tabbar a:active{transform:scale(.94)}
+.tb-ico{font-size:19px;line-height:1;opacity:.42;transition:opacity .25s}
+.tb-lb{font-size:10px;font-weight:600;color:#C4C0DA;letter-spacing:-.2px;transition:color .25s}
+.tabbar a.on .tb-ico{opacity:1}
+.tabbar a.on .tb-lb{color:#8B7FD9;font-weight:800}
+.tb-badge{position:absolute;top:-2px;left:50%;margin-left:6px;background:#F0A6C4;color:#fff;
+  font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;
+  box-shadow:0 2px 6px rgba(200,100,150,.35);display:none}
 </style>
   <style>
     @font-face {
@@ -492,7 +510,39 @@ function logout() {
   location.reload();
 }
 
+// 교재 질문 탭 배지: 영상이 아직 없는 질문 수
+async function updateTbBadge() {
+  var el = document.getElementById('tbBadge');
+  if (!el || !stuId) return;
+  try {
+    var asg = (await db.ref('smTbAssign/' + stuId).get()).val();
+    if (!asg) return;
+    var tids = Array.isArray(asg) ? asg : [asg];
+    var pending = 0;
+    for (var t = 0; t < tids.length; t++) {
+      var tid = tids[t];
+      var mine = (await db.ref('smTbQuestions/' + tid + '/' + stuId).get()).val() || {};
+      var keys = Object.keys(mine);
+      if (!keys.length) continue;
+      // 문제 전체가 아니라 내가 체크한 키만 개별 조회한다 (payload 최소)
+      var res = await Promise.all(keys.map(function (k) {
+        return db.ref('smTextbooks/' + tid + '/problems/' + k + '/youtubeUrl').get()
+          .then(function (sn) { return sn.val(); }).catch(function () { return null; });
+      }));
+      pending += res.filter(function (v) { return !v; }).length;
+    }
+    // 교재 외 질문도 합산
+    var fq = (await db.ref('smFreeQuestions/' + stuId).get()).val() || {};
+    pending += Object.values(fq).filter(function (q) { return q && !q.youtubeUrl; }).length;
+
+    if (pending > 0) { el.textContent = pending > 99 ? '99+' : pending; el.style.display = 'block'; }
+    else el.style.display = 'none';
+  } catch (e) {}
+}
+
 function showApp() {
+  var _tb=document.querySelector('.tabbar'); if(_tb) _tb.style.display='flex';
+  updateTbBadge();
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   document.getElementById('stuName').textContent = stuData.name || '';
@@ -1251,5 +1301,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 })();
 </script>
 
+  <nav class="tabbar">
+    <a href="./student.html" id="tabPlan" class="on"><span class="tb-ico">📝</span><span class="tb-lb">플래너</span></a>
+    <a href="./textbook_q.html" id="tabBook"><span class="tb-ico">📖</span><span class="tb-lb">교재 질문</span><span class="tb-badge" id="tbBadge"></span></a>
+  </nav>
 </body>
 </html>

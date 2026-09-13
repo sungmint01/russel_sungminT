@@ -44,26 +44,33 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
 .back-link:hover{color:var(--fg2)}
 
 /* APP */
-#app{display:none;max-width:480px;margin:0 auto;padding:0 0 40px}
+#app{display:none;max-width:560px;margin:0 auto;padding:0 14px 88px}
 
 /* HEADER */
-.hdr{background:linear-gradient(170deg,#4B4380,#6B5FB8 60%,#8B7FD9);
-  padding:38px 22px 44px;position:relative;overflow:hidden;border-radius:0 0 30px 30px}
-.hdr::before{content:'';position:absolute;width:200px;height:200px;
-  background:rgba(255,255,255,.07);border-radius:50%;right:-40px;top:-60px}
-.hdr::after{content:'';position:absolute;left:20px;bottom:-50px;width:130px;height:130px;
-  background:rgba(232,121,90,.15);border-radius:50%;filter:blur(24px)}
+.hdr{background:linear-gradient(168deg,#453D78 0%,#5B51A0 38%,#7A6DC9 72%,#9A8CE0 100%);
+  padding:26px 22px 30px;margin:12px 0 0;position:relative;overflow:hidden;border-radius:26px;
+  box-shadow:0 2px 6px rgba(70,60,130,.14),0 14px 34px -12px rgba(70,60,130,.40)}
+.hdr::before{content:'';position:absolute;width:260px;height:260px;
+  background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);
+  top:-110px;right:-70px;pointer-events:none}
+.hdr::after{content:'';position:absolute;width:180px;height:180px;
+  background:radial-gradient(circle,rgba(240,166,196,.20),transparent 70%);
+  bottom:-90px;left:-50px;pointer-events:none}
 .hdr-inner{position:relative;z-index:2}
-.hdr-label{font-family:'Pretendard',sans-serif;font-size:9.5px;letter-spacing:2px;
-  color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:6px}
-.hdr-name{font-size:25px;font-weight:800;color:#fff;letter-spacing:-.6px;margin-bottom:3px}
-.hdr-sub{font-size:12px;color:rgba(255,255,255,.7)}
+.hdr-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:99px;padding:5px 13px;
+  font-size:9.5px;font-weight:700;color:rgba(255,255,255,.82);letter-spacing:1.6px;margin-bottom:15px}
+.hdr-badge:before{content:'';width:5px;height:5px;border-radius:50%;background:#9DD9C4;
+  box-shadow:0 0 0 3px rgba(157,217,196,.28)}
+.hdr-name{font-family:'MaruBuri','Pretendard',sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
+  letter-spacing:-.5px;text-shadow:0 2px 12px rgba(40,30,90,.22)}
+.hdr-sub{font-size:12.5px;color:rgba(255,255,255,.68);letter-spacing:-.1px}
 .logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);
   border:none;padding:6px 12px;border-radius:20px;color:#fff;font-size:12px;cursor:pointer;
   font-family:inherit;font-weight:500;z-index:10}
 
 /* BODY */
-.body{padding:16px 16px 0}
+.body{padding:16px 0 0}
 
 .card{position:relative;background:var(--surface);border-radius:22px;padding:18px 19px;margin-bottom:13px;overflow:hidden;
   box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 28px -10px rgba(120,105,205,.22)}
@@ -197,6 +204,24 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
 .yt-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:4px;
   margin:0 auto 16px}
 .yt-embed{width:100%;aspect-ratio:16/9;border-radius:12px;border:none;margin-top:10px}
+
+/* ── 하단 탭바 (student.html / textbook_q.html 동일 · 수정 시 양쪽 함께 교체) ── */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+  border-top:1px solid rgba(139,127,217,.13);
+  box-shadow:0 -4px 20px -8px rgba(120,105,205,.18);
+  padding:7px 0 calc(9px + env(safe-area-inset-bottom))}
+.tabbar a{flex:1;text-decoration:none;text-align:center;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.tabbar a:active{transform:scale(.94)}
+.tb-ico{font-size:19px;line-height:1;opacity:.42;transition:opacity .25s}
+.tb-lb{font-size:10px;font-weight:600;color:#C4C0DA;letter-spacing:-.2px;transition:color .25s}
+.tabbar a.on .tb-ico{opacity:1}
+.tabbar a.on .tb-lb{color:#8B7FD9;font-weight:800}
+.tb-badge{position:absolute;top:-2px;left:50%;margin-left:6px;background:#F0A6C4;color:#fff;
+  font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;
+  box-shadow:0 2px 6px rgba(200,100,150,.35);display:none}
 </style>
 </head>
 <body>
@@ -220,9 +245,9 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
   <div class="hdr">
     <button class="logout-btn" onclick="doLogout()">로그아웃</button>
     <div class="hdr-inner">
-      <div class="hdr-label">Textbook Questions</div>
+      <div class="hdr-badge">Student</div>
       <div class="hdr-name" id="hdrName">-</div>
-      <div class="hdr-sub" id="hdrSub">교재 질문 체크</div>
+      <div class="hdr-sub" id="hdrSub">교재 질문</div>
     </div>
   </div>
 
@@ -383,11 +408,17 @@ async function doLogin(){
     }
     currentStuId=entry[0];
     currentStuName=entry[1].name;
+    document.getElementById('hdrSub').textContent=(entry[1].grade||'')+' · '+(entry[1].subj||'수학');
+    try{
+      sessionStorage.setItem('stuId',currentStuId);
+      sessionStorage.setItem('stuHash',hash);
+    }catch(e){}
     loadApp();
   });
 }
 
 function doLogout(){
+  try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
   currentStuId=null; currentStuName=null; activeTbId=null;
   assignedTbIds=[]; tbData={}; myQuestions={};
   document.getElementById('app').style.display='none';
@@ -396,7 +427,26 @@ function doLogout(){
   document.getElementById('errLogin').textContent='';
 }
 
+// 플래너 탭에서 넘어온 경우 세션으로 자동 로그인
+function tryAutoLogin(){
+  var sid, hash;
+  try{ sid=sessionStorage.getItem('stuId'); hash=sessionStorage.getItem('stuHash'); }catch(e){}
+  if(!sid||!hash||!db) return false;
+  db.ref('smStudents/'+sid).once('value',function(sn){
+    var v=sn.val();
+    if(!v||v.studentPwHash!==hash){
+      try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
+      return;
+    }
+    currentStuId=sid; currentStuName=v.name;
+    document.getElementById('hdrSub').textContent=(v.grade||'')+' · '+(v.subj||'수학');
+    loadApp();
+  }).catch(function(){});
+  return true;
+}
+
 function loadApp(){
+  var _tb=document.querySelector('.tabbar'); if(_tb) _tb.style.display='flex';
   document.getElementById('loginPage').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('hdrName').textContent=currentStuName;
@@ -852,8 +902,14 @@ function renderYtPanel(tb){
   var _smvRef=null;
   function doCheck(){var db=getDB();if(!db||_smvRef)return;_smvRef=db.ref('smAppVersion');_smvRef.on('value',function(s){var sv=String(s.val()||'');if(!sv)return;var lv=localStorage.getItem('smv')||'';if(lv===sv)return;if(location.search.indexOf('_v='+sv)!==-1)return;location.replace(location.pathname+'?_v='+sv);});}
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',doCheck);}else{doCheck();}
+  // DB 준비 후 자동 로그인 시도
+  setTimeout(function(){ try{ tryAutoLogin(); }catch(e){} }, 300);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')doCheck();});
 })();
 </script>
+  <nav class="tabbar">
+    <a href="./student.html" id="tabPlan"><span class="tb-ico">📝</span><span class="tb-lb">플래너</span></a>
+    <a href="./textbook_q.html" id="tabBook" class="on"><span class="tb-ico">📖</span><span class="tb-lb">교재 질문</span><span class="tb-badge" id="tbBadge"></span></a>
+  </nav>
 </body>
 </html>
