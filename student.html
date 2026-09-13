@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script>
+/* 탭 전환 시 로그인 화면이 번쩍이는 것을 막는다.
+   세션이 있으면 body 그려지기 전에 preauth 표시 → 로그인 박스 숨김 */
+(function(){try{
+  if(sessionStorage.getItem('stuId')&&sessionStorage.getItem('stuHash'))
+    document.documentElement.className+=' preauth';
+}catch(e){}})();
+</script>
 <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -271,6 +279,17 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .tb-badge{position:absolute;top:-2px;left:50%;margin-left:6px;background:#F0A6C4;color:#fff;
   font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;
   box-shadow:0 2px 6px rgba(200,100,150,.35);display:none}
+
+/* ── 자동 로그인 대기 화면 (student.html / textbook_q.html 동일) ── */
+html.preauth #loginPage{display:none !important}
+html.preauth #splash{display:flex}
+#splash{display:none;position:fixed;inset:0;z-index:9500;
+  align-items:center;justify-content:center;
+  background:linear-gradient(168deg,#453D78 0%,#5B51A0 38%,#7A6DC9 72%,#9A8CE0 100%)}
+#splash i{width:34px;height:34px;border-radius:50%;display:block;
+  border:3px solid rgba(255,255,255,.25);border-top-color:#fff;
+  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
   <style>
     @font-face {
@@ -283,6 +302,8 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
   </style>
 </head>
 <body>
+<div id="splash"><i></i></div>
+
 
 <!-- Login -->
 <div id="loginPage">
@@ -540,7 +561,19 @@ async function updateTbBadge() {
   } catch (e) {}
 }
 
+
+// preauth 해제: 자동 로그인 성공/실패가 확정되면 스플래시를 걷는다
+function endPreauth(showLogin){
+  document.documentElement.className=document.documentElement.className.replace(/\s*preauth/,'');
+  var sp=document.getElementById('splash'); if(sp) sp.style.display='none';
+  if(showLogin){
+    try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
+    var lp=document.getElementById('loginPage'); if(lp) lp.style.display='flex';
+  }
+}
+
 function showApp() {
+  endPreauth(false);
   var _tb=document.querySelector('.tabbar'); if(_tb) _tb.style.display='flex';
   updateTbBadge();
   document.getElementById('loginPage').style.display = 'none';
@@ -1234,14 +1267,18 @@ async function loadPlannerImg(pid){
 window.addEventListener('DOMContentLoaded', async () => {
   const sid = sessionStorage.getItem('stuId');
   const hash = sessionStorage.getItem('stuHash');
-  if (sid && hash && db) {
+  if (!sid || !hash) { endPreauth(false); return; }
+  try {
+    if (!db) throw new Error('no db');
     const snap = await db.ref(`smStudents/${sid}`).get();
     const s = snap.val();
     if (s && s.studentPwHash === hash) {
       stuId = sid; stuData = s;
-      showApp();
+      showApp();          // 내부에서 endPreauth(false)
+    } else {
+      endPreauth(true);   // 세션 무효 → 로그인 화면
     }
-  }
+  } catch (e) { endPreauth(true); }
 });
 </script>
 

@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script>
+/* 탭 전환 시 로그인 화면이 번쩍이는 것을 막는다.
+   세션이 있으면 body 그려지기 전에 preauth 표시 → 로그인 박스 숨김 */
+(function(){try{
+  if(sessionStorage.getItem('stuId')&&sessionStorage.getItem('stuHash'))
+    document.documentElement.className+=' preauth';
+}catch(e){}})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교재 질문 — 성민T</title>
@@ -222,9 +230,22 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
 .tb-badge{position:absolute;top:-2px;left:50%;margin-left:6px;background:#F0A6C4;color:#fff;
   font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;
   box-shadow:0 2px 6px rgba(200,100,150,.35);display:none}
+
+/* ── 자동 로그인 대기 화면 (student.html / textbook_q.html 동일) ── */
+html.preauth #loginPage{display:none !important}
+html.preauth #splash{display:flex}
+#splash{display:none;position:fixed;inset:0;z-index:9500;
+  align-items:center;justify-content:center;
+  background:linear-gradient(168deg,#453D78 0%,#5B51A0 38%,#7A6DC9 72%,#9A8CE0 100%)}
+#splash i{width:34px;height:34px;border-radius:50%;display:block;
+  border:3px solid rgba(255,255,255,.25);border-top-color:#fff;
+  animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
+<div id="splash"><i></i></div>
+
 
 <!-- LOGIN -->
 <div id="loginPage">
@@ -428,6 +449,17 @@ function doLogout(){
 }
 
 // 플래너 탭에서 넘어온 경우 세션으로 자동 로그인
+
+// preauth 해제: 자동 로그인 성공/실패가 확정되면 스플래시를 걷는다
+function endPreauth(showLogin){
+  document.documentElement.className=document.documentElement.className.replace(/\s*preauth/,'');
+  var sp=document.getElementById('splash'); if(sp) sp.style.display='none';
+  if(showLogin){
+    try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
+    var lp=document.getElementById('loginPage'); if(lp) lp.style.display='flex';
+  }
+}
+
 function tryAutoLogin(){
   var sid, hash;
   try{ sid=sessionStorage.getItem('stuId'); hash=sessionStorage.getItem('stuHash'); }catch(e){}
@@ -436,18 +468,16 @@ function tryAutoLogin(){
   if(!db) return false;
   db.ref('smStudents/'+sid).once('value',function(sn){
     var v=sn.val();
-    if(!v||v.studentPwHash!==hash){
-      try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
-      return;
-    }
+    if(!v||v.studentPwHash!==hash){ endPreauth(true); return; }
     currentStuId=sid; currentStuName=v.name;
     document.getElementById('hdrSub').textContent=(v.grade||'')+' · '+(v.subj||'수학');
     loadApp();
-  }).catch(function(){});
+  }).catch(function(){ endPreauth(true); });
   return true;
 }
 
 function loadApp(){
+  endPreauth(false);
   var _tb=document.querySelector('.tabbar'); if(_tb) _tb.style.display='flex';
   document.getElementById('loginPage').style.display='none';
   document.getElementById('app').style.display='block';
@@ -911,6 +941,7 @@ function renderYtPanel(tb){
       var ok=false;
       try{ ok=tryAutoLogin(); }catch(e){}
       if(!ok && ++tries<20) setTimeout(attempt,150);   // 최대 3초간 재시도
+      else if(!ok) endPreauth(true);                    // 끝내 실패 → 로그인
     })();
   })();
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')doCheck();});
