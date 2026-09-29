@@ -651,10 +651,13 @@ function renderHomework() {
   // 오늘로부터 7일 전
   // 타임존 버그 없는 7일 전 계산
   const _wd = new Date(); _wd.setDate(_wd.getDate() - 7);
-  const weekAgo = _wd.getFullYear() + '-' + String(_wd.getMonth()+1).padStart(2,'0') + '-' + String(_wd.getDate()).padStart(2,'0');
+  // 달력에서 고른 날(_baseDate)이 있으면 그날 기준 7일, 그날 이후 기록은 제외
+  const upTo = (typeof _baseDate !== 'undefined' && _baseDate) ? _baseDate : null;
+  const weekAgo = upTo ? addDays(upTo, -7)
+    : _wd.getFullYear() + '-' + String(_wd.getMonth()+1).padStart(2,'0') + '-' + String(_wd.getDate()).padStart(2,'0');
   // 숙제·진도·코멘트 중 하나라도 있으면 표시 대상
   const arr = Object.values(sessions)
-    .filter(r => (r.hwC || r.prog || r.comment) && r.date && r.date >= weekAgo)
+    .filter(r => (r.hwC || r.prog || r.comment) && r.date && r.date >= weekAgo && (!upTo || r.date <= upTo))
     .sort((a,b) => (b.date||'').localeCompare(a.date||''));
   const el = document.getElementById('hwContent');
   if (!arr.length) {
@@ -923,6 +926,7 @@ function jumpToDate(ds) {
   _redo = false;
   _baseDate = ds || null;
   selectSlot('plan');
+  renderHomework();
   var w = document.getElementById('tlWrap');
   if (w) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
