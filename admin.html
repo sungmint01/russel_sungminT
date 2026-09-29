@@ -657,7 +657,7 @@ textarea.inp{resize:vertical;min-height:68px}
         <div class="fg"><label class="fl">과목</label><input class="inp" id="smSubj" type="text" value="수학"></div>
       </div>
       <div class="fg"><label class="fl">반 이름</label><input class="inp" id="smClass" type="text" placeholder="예: 월수반, 화목반, 고3반"></div>
-      <div class="fg"><label class="fl">학부모 연락처</label><input class="inp" id="smPhone" type="text" placeholder="010-0000-0000"></div>
+      <div class="fg"><label class="fl">학부모 연락처 <span style="font-weight:500;color:#AAA5C8">(선택)</span></label><input class="inp" id="smPhone" type="text" placeholder="비워둬도 됩니다"></div>
       <div class="fg">
         <label class="fl">학부모 비밀번호</label>
         <input class="inp" id="smParentPw" type="text" placeholder="학부모가 사용할 비밀번호">
@@ -2876,7 +2876,11 @@ async function saveStudent(){
   const name=document.getElementById('smName').value.trim();
   if(!name){alert('이름을 입력하세요');return;}
   const eid=document.getElementById('smId').value;
-  const data={name,grade:document.getElementById('smGrade').value,subj:document.getElementById('smSubj').value,cls:document.getElementById('smClass').value.trim(),phone:document.getElementById('smPhone').value};
+  const data={name,grade:document.getElementById('smGrade').value,subj:document.getElementById('smSubj').value,cls:document.getElementById('smClass').value.trim()};
+  // 연락처는 선택: 값이 있을 때만 저장, 수정 중 비웠으면 기존 번호 삭제
+  const phone=document.getElementById('smPhone').value.trim();
+  if(phone) data.phone=phone;
+  else if(eid) data.phone=null;
   const parentPw=document.getElementById('smParentPw').value.trim();
   if(parentPw){
     data.parentPw=parentPw;
