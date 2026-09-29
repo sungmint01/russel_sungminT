@@ -298,6 +298,43 @@ textarea.inp{resize:vertical;min-height:68px}
 .bm-stu-tag{background:#f1f5f9;border-radius:6px;padding:3px 9px;font-size:12px;color:#475569}
 .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+
+/* ── AI 코멘트 초안 ── */
+.aic-ov{position:fixed;inset:0;background:rgba(45,38,80,.5);backdrop-filter:blur(4px);z-index:9200;
+  display:none;align-items:flex-end;justify-content:center}
+.aic-ov.open{display:flex}
+.aic{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:20px 20px 24px;
+  max-height:88vh;overflow-y:auto;animation:aicUp .3s cubic-bezier(.34,1.4,.64,1)}
+@keyframes aicUp{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.aic-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.aic-t{font-size:16px;font-weight:800;color:#3D3860;letter-spacing:-.3px}
+.aic-x{border:none;background:none;font-size:19px;color:#C4C0DA;cursor:pointer;padding:2px 6px}
+.aic-sub{font-size:11.5px;color:#AAA5C8;margin-bottom:14px}
+.aic-lb{font-size:11px;font-weight:700;color:#8B7FD9;letter-spacing:.3px;margin:14px 0 7px}
+.aic-chips{display:flex;flex-wrap:wrap;gap:6px}
+.aic-chip{border:1px solid rgba(139,127,217,.22);background:#fff;color:#7B76A8;border-radius:99px;
+  padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;transition:.18s}
+.aic-chip:hover{border-color:#A89BEB}
+.aic-chip.on{background:linear-gradient(135deg,#8B7FD9,#A89BEB);color:#fff;border-color:transparent}
+.aic-ta{width:100%;border:1.5px solid rgba(139,127,217,.2);border-radius:13px;padding:11px 13px;
+  font-size:13px;font-family:inherit;resize:vertical;min-height:62px;outline:none;color:#3D3860;
+  box-sizing:border-box;background:#FBFAFE}
+.aic-ta:focus{border-color:#A89BEB}
+.aic-go{width:100%;margin-top:14px;border:none;border-radius:15px;padding:14px;
+  background:linear-gradient(135deg,#8B7FD9,#A89BEB);color:#fff;font-size:14px;font-weight:700;
+  font-family:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(139,127,217,.26)}
+.aic-go:disabled{background:#EFECF9;color:#B9B4D2;cursor:not-allowed;box-shadow:none}
+.aic-res{margin-top:15px}
+.aic-card{position:relative;background:#FBFAFE;border:1px solid rgba(139,127,217,.14);
+  border-radius:15px;padding:13px 15px;margin-bottom:9px;font-size:13.5px;color:#3D3860;
+  line-height:1.72;cursor:pointer;transition:.2s}
+.aic-card:hover{border-color:#A89BEB;transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(120,105,205,.13)}
+.aic-card:after{content:'눌러서 넣기';position:absolute;right:13px;bottom:8px;font-size:10px;color:#C4C0DA}
+.aic-err{font-size:12.5px;color:#B4527C;background:#FDF2F7;border-radius:12px;padding:11px 13px;margin-top:13px}
+.btn-aic{border:1px solid rgba(139,127,217,.25);background:#fff;color:#8B7FD9;border-radius:9px;
+  padding:5px 11px;font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:6px}
+.btn-aic:hover{background:#F7F5FE}
 </style>
   <style>
     @font-face {
@@ -691,7 +728,7 @@ textarea.inp{resize:vertical;min-height:68px}
         <span style="font-size:12px;color:#94a3b8;margin-left:6px">달력에 ⏰으로 표시됩니다</span>
       </div>
       <div class="fg"><label class="fl">지난 시간 숙제 범위</label><input class="inp" id="rmPrevHw" type="text" placeholder="자동 입력 (수정 가능)"></div>
-      <div class="fg"><label class="fl">숙제 코멘트</label><textarea class="inp" id="rmComment" placeholder="숙제 관련 코멘트를 적어주세요"></textarea></div>
+      <div class="fg"><label class="fl">숙제 코멘트<button type="button" class="btn-aic" onclick="openAic('rmComment','homework')">✨ AI 초안</button></label><textarea class="inp" id="rmComment" placeholder="숙제 관련 코멘트를 적어주세요"></textarea></div>
       <div class="fg"><label class="fl">특이사항</label><textarea class="inp" id="rmSpecial" placeholder="특이사항을 적어주세요"></textarea></div>
       <div class="fg"><label class="fl">오늘 숙제</label><input class="inp" id="rmHwC" type="text" placeholder="예: 교재 p.130~145 연습문제 전체"></div>
       <div class="fg"><label class="fl">클리닉 내용</label><textarea class="inp" id="rmCli" placeholder="클리닉 시간에 다룬 내용"></textarea></div>
@@ -2587,6 +2624,12 @@ async function openPlannerPreview(stuName, type, items, stuId){
     const lbl=document.createElement('div');lbl.style.cssText='font-size:11px;font-weight:700;color:#8a96b4;margin-bottom:8px';
     lbl.textContent='코멘트';cbox.appendChild(lbl);
     const ta=document.createElement('textarea');
+    (function(){
+      const ab=document.createElement('button');
+      ab.type='button'; ab.className='btn-aic'; ab.textContent='✨ AI 초안';
+      ab.onclick=function(){ openAic(ta,'planner'); };
+      lbl.appendChild(ab);
+    })();
     ta.style.cssText='width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:70px;outline:none;color:#1a2840;box-sizing:border-box';
     ta.placeholder='코멘트를 입력하세요...';ta.value=p.comment||'';cbox.appendChild(ta);
     const btn=document.createElement('button');
@@ -3037,6 +3080,7 @@ function loadRmPlanners(date) {
     html += '<textarea id="rpct_' + pid + '" placeholder="코멘트 입력">' + (p.comment||'') + '</textarea>';
     html += '<div class="rm-pcomment-form-row">';
     html += '<button class="btn-rpc-save" onclick="saveRmComment(this,&quot;' + pid + '&quot;)">저장</button> ';
+    html += '<button type="button" class="btn-aic" onclick="openAic(&quot;rpct_' + pid + '&quot;,&quot;planner&quot;)">✨ AI 초안</button> ';
     html += '<button class="btn-rpc-cancel" onclick="toggleRpcForm(&quot;' + pid + '&quot;)">취소</button>';
     html += '</div></div>';
     html += '<div style="padding:6px 12px 8px;display:flex;gap:10px">';
@@ -3314,6 +3358,88 @@ function today(){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 function tuid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+
+/* ===== AI 코멘트 초안 ===== */
+/* 배포 후 Cloudflare Worker 주소를 여기에 넣으세요 */
+var AIC_ENDPOINT = 'https://sungmint-ai.zpcp1212.workers.dev';
+
+var AIC_PRESET = {
+  planner: ['집중 잘함','계획 충실','분량 적음','계획만 세움','오답정리 필요',
+            '질문 많이 함','꾸준함','밀린 부분 있음','속도 빨라짐','글씨 정성'],
+  homework: ['숙제 완료','일부 미제출','오답 많음','실수 반복','풀이 과정 생략',
+             '난이도 어려워함','복습 필요','성실함','시간 부족','개념 흔들림']
+};
+var _aicTarget=null, _aicKind='planner', _aicTone='warm';
+
+function openAic(target, kind){
+  _aicTarget = (typeof target === 'string') ? document.getElementById(target) : target;
+  if(!_aicTarget){ toast('입력칸을 찾지 못했습니다'); return; }
+  _aicKind = (kind === 'homework') ? 'homework' : 'planner';
+  _aicTone = 'warm';
+  var chips = AIC_PRESET[_aicKind].map(function(k){
+    return '<button class="aic-chip" onclick="toggleAicChip(this)">'+k+'</button>';
+  }).join('');
+  document.getElementById('aicChips').innerHTML = chips;
+  document.getElementById('aicKw').value = '';
+  document.getElementById('aicRes').innerHTML = '';
+  var tb = document.querySelectorAll('#aicTone .aic-chip');
+  for(var i=0;i<tb.length;i++) tb[i].className = 'aic-chip' + (i===0?' on':'');
+  document.getElementById('aicOv').classList.add('open');
+}
+function closeAic(){ document.getElementById('aicOv').classList.remove('open'); }
+function toggleAicChip(el){ el.classList.toggle('on'); }
+function pickTone(el){
+  var tb = document.querySelectorAll('#aicTone .aic-chip');
+  for(var i=0;i<tb.length;i++) tb[i].classList.remove('on');
+  el.classList.add('on');
+  _aicTone = el.getAttribute('data-tone');
+}
+function collectAicKeywords(){
+  var picked = [];
+  var cs = document.querySelectorAll('#aicChips .aic-chip.on');
+  for(var i=0;i<cs.length;i++) picked.push(cs[i].textContent);
+  var free = (document.getElementById('aicKw').value||'').trim();
+  if(free) picked.push(free);
+  return picked.join(', ');
+}
+async function runAic(){
+  var kw = collectAicKeywords();
+  var res = document.getElementById('aicRes');
+  if(!kw){ res.innerHTML = '<div class="aic-err">상황을 하나 이상 고르거나 메모를 적어 주세요.</div>'; return; }
+  if(!AIC_ENDPOINT){ res.innerHTML = '<div class="aic-err">AIC_ENDPOINT가 설정되지 않았습니다. admin.html 상단의 주소를 채워 주세요.</div>'; return; }
+  var btn = document.getElementById('aicGo');
+  btn.disabled = true; btn.textContent = '만드는 중...';
+  res.innerHTML = '';
+  try{
+    var r = await fetch(AIC_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ keywords: kw, kind: _aicKind, tone: _aicTone })
+    });
+    var d = await r.json();
+    if(!r.ok || !d.drafts){
+      res.innerHTML = '<div class="aic-err">'+ (d.error || '초안을 만들지 못했습니다') +'</div>';
+    }else{
+      res.innerHTML = d.drafts.map(function(t){
+        var esc = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return '<div class="aic-card" onclick="useAicDraft(this)">'+esc+'</div>';
+      }).join('');
+    }
+  }catch(e){
+    res.innerHTML = '<div class="aic-err">연결 실패: '+e.message+'</div>';
+  }finally{
+    btn.disabled = false; btn.textContent = '초안 만들기';
+  }
+}
+function useAicDraft(el){
+  if(!_aicTarget) return;
+  _aicTarget.value = el.textContent;
+  try{ _aicTarget.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){}
+  closeAic();
+  toast('초안을 넣었습니다. 다듬어서 저장하세요');
+}
+/* ===== AI 코멘트 초안 끝 ===== */
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSM();closeRM();closeBM();closeClinicForm();closePlannerPreview();}});
 document.getElementById('clinicModal').addEventListener('click',e=>{if(e.target.id==='clinicModal')closeClinicForm();});
@@ -3347,5 +3473,30 @@ document.getElementById('rm').addEventListener('click',e=>{if(e.target.id==='rm'
       </div>
     </div>
   </div>
+<div class="aic-ov" id="aicOv" onclick="if(event.target===this)closeAic()">
+  <div class="aic">
+    <div class="aic-h">
+      <div class="aic-t">코멘트 초안 만들기</div>
+      <button class="aic-x" onclick="closeAic()">✕</button>
+    </div>
+    <div class="aic-sub">키워드만 보냅니다. 학생 이름·성적은 전송하지 않습니다.</div>
+
+    <div class="aic-lb">상황 (눌러서 추가)</div>
+    <div class="aic-chips" id="aicChips"></div>
+
+    <div class="aic-lb">직접 메모</div>
+    <textarea class="aic-ta" id="aicKw" placeholder="예: 집중 좋았음, 유제 3번 반복 실수, 오답노트 밀림"></textarea>
+
+    <div class="aic-lb">말투</div>
+    <div class="aic-chips" id="aicTone">
+      <button class="aic-chip on" data-tone="warm" onclick="pickTone(this)">따뜻하게</button>
+      <button class="aic-chip" data-tone="plain" onclick="pickTone(this)">담백하게</button>
+      <button class="aic-chip" data-tone="firm" onclick="pickTone(this)">단호하게</button>
+    </div>
+
+    <button class="aic-go" id="aicGo" onclick="runAic()">초안 만들기</button>
+    <div class="aic-res" id="aicRes"></div>
+  </div>
+</div>
 </body>
 </html>
