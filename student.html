@@ -269,6 +269,33 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .badge-done{background:#f0fdf4;color:#15803d}
 .section-title{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:15px;margin-bottom:10px;color:#374151}
 
+/* ── 클리닉 신청 ── */
+.cb-card{position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:18px 18px 12px;margin:18px 0 16px;
+  box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 26px -10px rgba(120,105,205,.24)}
+.cb-card:before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,transparent 0 25px,rgba(107,95,184,.04) 25px 26px)}
+.cb-card:after{content:'';position:absolute;top:0;bottom:0;left:13px;width:1px;background:rgba(240,166,196,.26)}
+.cb-card>*{position:relative}
+.cb-cap{font-size:9.5px;letter-spacing:1.6px;font-weight:700;color:#8B7FD9}
+.cb-title{font-size:15px;font-weight:800;color:#3D3860;margin:4px 0 12px;letter-spacing:-.3px}
+.cb-mine{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;
+  background:linear-gradient(160deg,#EDF9F4,#DFF2EA);box-shadow:0 0 0 1.5px #9DD9C4;border-radius:14px;padding:11px 14px}
+.cb-mine-lb{font-size:11px;font-weight:700;color:#3F8A72}
+.cb-mine-v{font-size:14px;font-weight:800;color:#357A63;margin-top:2px;font-variant-numeric:tabular-nums}
+.cb-cancel{flex-shrink:0;border:1px solid rgba(86,160,138,.35);background:#fff;color:#3F8A72;border-radius:99px;
+  padding:5px 12px;font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer}
+.cb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-bottom:7px;
+  background:#fff;border:1px solid rgba(139,127,217,.22);border-radius:14px;padding:10px 14px;
+  font-family:inherit;text-align:left;cursor:pointer;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.cb-row:hover{transform:translateY(-1px);border-color:#A89BEB;box-shadow:0 6px 16px -8px rgba(107,95,184,.3)}
+.cb-row.full{cursor:default;background:#FBFAFF;border-color:rgba(196,192,218,.45)}
+.cb-row.full:hover{transform:none;box-shadow:none}
+.cb-d{font-size:13px;font-weight:700;color:#3D3860;font-variant-numeric:tabular-nums}
+.cb-t{font-size:12px;color:#7B76A8;margin-top:2px;font-variant-numeric:tabular-nums}
+.cb-row.full .cb-d,.cb-row.full .cb-t{color:#C4C0DA}
+.cb-left{flex-shrink:0;font-size:11.5px;font-weight:700;color:#5B4FA8;background:#F2EFFC;border-radius:99px;padding:4px 11px}
+.cb-row.full .cb-left{color:#B4527C;background:rgba(240,166,196,.16)}
+
 /* ── 하단 탭바 (student.html / textbook_q.html 동일 · 수정 시 양쪽 함께 교체) ── */
 .tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;
   background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
@@ -459,6 +486,13 @@ html.preauth #splash{display:flex}
       </div>
     </div>
   </div>
+  <!-- Clinic booking -->
+  <div class="cb-card" id="cbCard" style="display:none">
+    <div class="cb-cap">CLINIC</div>
+    <div class="cb-title">클리닉 신청</div>
+    <div id="cbMine"></div>
+    <div id="cbList"></div>
+  </div>
   <!-- Planner detail modal -->
   <div class="plan-detail-ov" id="planDetailOv" onclick="if(event.target===this)closePlanDetail()">
     <div class="plan-detail-modal">
@@ -599,6 +633,8 @@ function showApp() {
     renderPlanners(_planAll);
     renderPlanSlots();
   });
+  // 클리닉 신청: 오늘 이후 슬롯만 (키가 날짜로 시작)
+  loadClinicBooking();
   // Load od4p - 오늘 날짜만 로드 (전체 트리 다운로드 방지)
   function loadOd4pForDate(dateStr) {
     db.ref('od4p/' + dateStr).get().then(s => {
@@ -932,6 +968,80 @@ function jumpToDate(ds) {
 }
 
 function startRedo() { _redo = true; renderPlanSlots(); }
+
+// ── 클리닉 신청 ──
+// smClinicSlots/{날짜_시작}  date, start, end, cap / smClinicBookings/{slotId}/{stuId} = 신청 시각
+var _cbSlots = {}, _cbBooks = {}, _cbBusy = false;
+var CB_DOW = ['일','월','화','수','목','금','토'];
+function loadClinicBooking() {
+  var from = todayForPlan();
+  db.ref('smClinicSlots').orderByKey().startAt(from).on('value', function (s) { _cbSlots = s.val() || {}; renderClinicBooking(); });
+  db.ref('smClinicBookings').orderByKey().startAt(from).on('value', function (s) { _cbBooks = s.val() || {}; renderClinicBooking(); });
+}
+function cbStartTs(sl) { return new Date(sl.date + 'T' + sl.start + ':00').getTime(); }
+function cbDay(sl) {
+  var d = new Date(sl.date + 'T00:00:00');
+  return (d.getMonth() + 1) + '월 ' + d.getDate() + '일(' + CB_DOW[d.getDay()] + ')';
+}
+function cbTime(sl) { return sl.start + '–' + sl.end; }
+function renderClinicBooking() {
+  var card = document.getElementById('cbCard');
+  if (!card) return;
+  var now = Date.now();
+  var ids = Object.keys(_cbSlots || {}).filter(function (id) {
+    var sl = _cbSlots[id];
+    return sl && sl.date && sl.start && sl.end && sl.cap > 0 && cbStartTs(sl) > now;
+  }).sort();
+  var mine = '', list = '';
+  ids.forEach(function (id) {
+    var sl = _cbSlots[id], bk = (_cbBooks || {})[id] || {};
+    if (bk[stuId]) {
+      mine += '<div class="cb-mine"><div><div class="cb-mine-lb">신청 완료</div>'
+        + '<div class="cb-mine-v">' + cbDay(sl) + ' ' + cbTime(sl) + '</div></div>'
+        + '<button class="cb-cancel" onclick="cbCancel(\'' + id + '\')">취소</button></div>';
+      return;
+    }
+    var left = sl.cap - Object.keys(bk).length;
+    list += '<button class="cb-row' + (left > 0 ? '' : ' full') + '"' + (left > 0 ? ' onclick="cbBook(\'' + id + '\')"' : '') + '>'
+      + '<div><div class="cb-d">' + cbDay(sl) + '</div><div class="cb-t">' + cbTime(sl) + '</div></div>'
+      + '<span class="cb-left">' + (left > 0 ? left + '자리 남음' : '마감') + '</span></button>';
+  });
+  card.style.display = ids.length ? 'block' : 'none';
+  document.getElementById('cbMine').innerHTML = mine;
+  document.getElementById('cbList').innerHTML = list;
+}
+function cbBook(id) {
+  var sl = _cbSlots[id];
+  if (_cbBusy || !sl || !stuId) return;
+  if (cbStartTs(sl) <= Date.now()) { alert('이미 시작한 클리닉이에요'); renderClinicBooking(); return; }
+  if (!confirm(cbDay(sl) + ' ' + cbTime(sl) + '\n클리닉을 신청할까요?')) return;
+  _cbBusy = true;
+  // 동시에 마지막 자리를 누르는 경우를 막기 위해 트랜잭션으로 정원 확인
+  db.ref('smClinicBookings/' + id).transaction(function (cur) {
+    cur = cur || {};
+    if (cur[stuId]) return;                           // 이미 신청 → 중단
+    if (Object.keys(cur).length >= sl.cap) return;    // 정원 참 → 중단
+    cur[stuId] = Date.now();
+    return cur;
+  }, function (err, committed, snap) {
+    _cbBusy = false;
+    if (err) { alert('신청하지 못했어요. 잠시 후 다시 시도해 주세요'); return; }
+    if (!committed) {
+      var v = (snap && snap.val()) || {};
+      alert(v[stuId] ? '이미 신청했어요' : '방금 자리가 모두 찼어요');
+    }
+  });
+}
+function cbCancel(id) {
+  var sl = _cbSlots[id];
+  if (_cbBusy || !sl || !stuId) return;
+  if (cbStartTs(sl) <= Date.now()) { alert('이미 시작한 클리닉은 취소할 수 없어요'); renderClinicBooking(); return; }
+  if (!confirm(cbDay(sl) + ' ' + cbTime(sl) + '\n신청을 취소할까요?')) return;
+  _cbBusy = true;
+  db.ref('smClinicBookings/' + id + '/' + stuId).remove()
+    .catch(function () { alert('취소하지 못했어요. 잠시 후 다시 시도해 주세요'); })
+    .then(function () { _cbBusy = false; });
+}
 
 function onFileSelect(e) {
   const file = e.target.files[0];

@@ -262,6 +262,25 @@ textarea.inp{resize:vertical;min-height:68px}
 .cl-active{background:#dcfce7;color:#166534}
 .cl-closed{background:#f1f5f9;color:#AAA5C8}
 .cl-target{font-size:11px;color:#5a6e96;margin-bottom:8px}
+/* 클리닉 신청 슬롯 */
+.cs-box{background:#fff;border-radius:12px;border:1px solid rgba(120,105,205,.12);padding:16px;margin-bottom:18px}
+.cs-head{font-size:14px;font-weight:700;color:#3D3860;margin-bottom:10px}
+.cs-sub{font-size:11px;font-weight:500;color:#AAA5C8;margin-left:6px}
+.cs-form{display:grid;grid-template-columns:1.4fr 1fr 1fr .7fr auto;gap:8px;align-items:center}
+.cs-form .inp{margin:0;padding:9px 10px;font-size:13px}
+.cs-form .btn-sv{padding:9px 16px;font-size:13px}
+.cs-hint{font-size:10.5px;color:#AAA5C8;margin:5px 0 10px}
+.cs-row{border-top:1px solid rgba(120,105,205,.10);padding:10px 0}
+.cs-row.past{opacity:.5}
+.cs-row-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cs-when{font-size:13px;font-weight:700;color:#3D3860;font-variant-numeric:tabular-nums}
+.cs-cnt{font-size:12px;font-weight:700;color:#6B5FB8;font-variant-numeric:tabular-nums;margin-right:10px}
+.cs-cnt.full{color:#C85F8A}
+.cs-names{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.cs-name{display:inline-flex;align-items:center;gap:2px;background:#F2EFFC;color:#5C5680;border-radius:99px;padding:3px 5px 3px 10px;font-size:11.5px}
+.cs-name button{border:none;background:none;color:#AAA5C8;cursor:pointer;font-size:11px;padding:0 4px;font-family:inherit}
+.cs-name button:hover{color:#C85F8A}
+.cs-none{font-size:11px;color:#AAA5C8;margin-top:5px}
 .cl-ans-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:8px}
 .cl-ans-cell{background:#f8fafc;border-radius:6px;padding:4px 2px;text-align:center;font-size:10px}
 .cl-ans-num{color:#AAA5C8;display:block;font-size:9px}
@@ -476,6 +495,18 @@ textarea.inp{resize:vertical;min-height:68px}
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
           <div style="font-size:16px;font-weight:700">클리닉 관리</div>
           <button class="btn-sv" onclick="openClinicForm()">+ 클리닉 추가</button>
+        </div>
+        <div class="cs-box">
+          <div class="cs-head">신청 슬롯<span class="cs-sub">학생이 플래너 탭에서 골라 신청합니다</span></div>
+          <div class="cs-form">
+            <input class="inp" id="csDate" type="date">
+            <input class="inp" id="csStart" type="time" step="300">
+            <input class="inp" id="csEnd" type="time" step="300">
+            <input class="inp" id="csCap" type="number" min="1" max="99" placeholder="정원">
+            <button class="btn-sv" onclick="addClinicSlot()">열기</button>
+          </div>
+          <div class="cs-hint">날짜 · 시작 · 끝 · 정원</div>
+          <div id="csList"><p class="etbl">열린 슬롯이 없습니다</p></div>
         </div>
 
 
@@ -1860,6 +1891,99 @@ function showClinicMgr(){
   db.ref('smClinicResults').off();
   db.ref('smClinicSets').on('value',s=>{clinicSets=s.val()||{};renderClinicList();});
   db.ref('smClinicResults').on('value',s=>{clinicResults=s.val()||{};renderClinicList();});
+  loadClinicSlots();
+}
+
+// ════ CLINIC SLOTS (학생 신청) ════
+// smClinicSlots/{날짜_HHMM}  date, start, end, cap, at / smClinicBookings/{slotId}/{stuId} = 신청 시각
+var csSlots={}, csBooks={}, _csQ=null, _cbQ=null;
+var CS_DOW=['일','월','화','수','목','금','토'];
+function csYmd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function loadClinicSlots(){
+  var d=new Date(); d.setDate(d.getDate()-7);
+  var from=csYmd(d);   // 지난 1주일 + 앞으로
+  if(_csQ) _csQ.off(); if(_cbQ) _cbQ.off();
+  _csQ=db.ref('smClinicSlots').orderByKey().startAt(from);
+  _cbQ=db.ref('smClinicBookings').orderByKey().startAt(from);
+  _csQ.on('value',function(s){csSlots=s.val()||{};renderClinicSlots();});
+  _cbQ.on('value',function(s){csBooks=s.val()||{};renderClinicSlots();});
+}
+function csEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function csWhen(sl){
+  var d=new Date(sl.date+'T00:00:00');
+  return (d.getMonth()+1)+'/'+d.getDate()+'('+CS_DOW[d.getDay()]+') '+sl.start+'–'+sl.end;
+}
+function csStartTs(sl){return new Date(sl.date+'T'+sl.start+':00').getTime();}
+function renderClinicSlots(){
+  var el=document.getElementById('csList'); if(!el) return;
+  var now=Date.now();
+  var ids=Object.keys(csSlots||{}).filter(function(id){var sl=csSlots[id];return sl&&sl.date&&sl.start;});
+  // 앞으로 열릴 것 먼저(가까운 순), 지난 것은 뒤(최근 순)
+  var up=ids.filter(function(id){return csStartTs(csSlots[id])>now;}).sort();
+  var past=ids.filter(function(id){return csStartTs(csSlots[id])<=now;}).sort().reverse();
+  if(!up.length&&!past.length){el.innerHTML='<p class="etbl">열린 슬롯이 없습니다</p>';return;}
+  el.innerHTML=up.concat(past).map(function(id){
+    var sl=csSlots[id], bk=(csBooks||{})[id]||{}, isPast=csStartTs(sl)<=now;
+    var sids=Object.keys(bk).sort(function(a,b){return (bk[a]||0)-(bk[b]||0);});
+    var full=sids.length>=sl.cap;
+    var names=sids.map(function(sid){
+      var nm=csEsc((students[sid]&&students[sid].name)||'(삭제된 학생)');
+      return '<span class="cs-name">'+nm+(isPast?'':'<button title="신청 취소" onclick="csRemoveBooking(\''+id+'\',\''+sid+'\')">✕</button>')+'</span>';
+    }).join('');
+    return '<div class="cs-row'+(isPast?' past':'')+'"><div class="cs-row-h">'
+      +'<span class="cs-when">'+csWhen(sl)+(isPast?' · 지남':'')+'</span>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span class="cs-cnt'+(full?' full':'')+'">'+sids.length+'/'+sl.cap+(full?' 마감':'')+'</span>'
+      +(isPast?'':'<button class="lnk le" onclick="csEditCap(\''+id+'\')">정원 수정</button>')
+      +'<button class="lnk ld" onclick="csDeleteSlot(\''+id+'\')">'+(isPast?'삭제':'닫기')+'</button>'
+      +'</div></div>'
+      +(sids.length?'<div class="cs-names">'+names+'</div>':'<div class="cs-none">신청자 없음</div>')
+      +'</div>';
+  }).join('');
+}
+async function addClinicSlot(){
+  var date=document.getElementById('csDate').value;
+  var start=document.getElementById('csStart').value;
+  var end=document.getElementById('csEnd').value;
+  var cap=parseInt(document.getElementById('csCap').value,10);
+  if(!date||!start||!end){toast('날짜와 시간을 입력하세요');return;}
+  if(end<=start){toast('끝 시각이 시작보다 늦어야 합니다');return;}
+  if(!(cap>=1&&cap<=99)){toast('정원은 1~99명');return;}
+  var sl={date:date,start:start,end:end,cap:cap};
+  if(csStartTs(sl)<=Date.now()){toast('이미 지난 시각입니다');return;}
+  var id=date+'_'+start.replace(':','');
+  try{
+    var ex=await db.ref('smClinicSlots/'+id).get();
+    if(ex.exists()){toast('같은 날짜·시작 시각 슬롯이 이미 있습니다');return;}
+    sl.at=Date.now();
+    await db.ref('smClinicSlots/'+id).set(sl);
+    document.getElementById('csStart').value='';
+    document.getElementById('csEnd').value='';
+    toast(csWhen(sl)+' 슬롯을 열었습니다');
+  }catch(e){toast('저장 실패: '+e.message);}
+}
+function csEditCap(id){
+  var sl=csSlots[id]; if(!sl) return;
+  var n=Object.keys((csBooks||{})[id]||{}).length;
+  var v=prompt(csWhen(sl)+'\n새 정원 (현재 신청 '+n+'명)',sl.cap);
+  if(v===null) return;
+  var cap=parseInt(v,10);
+  if(!(cap>=1&&cap<=99)){toast('정원은 1~99명');return;}
+  if(cap<n&&!confirm('이미 '+n+'명이 신청했습니다.\n정원을 '+cap+'명으로 줄여도 기존 신청은 유지됩니다.'))return;
+  db.ref('smClinicSlots/'+id+'/cap').set(cap).then(function(){toast('정원을 '+cap+'명으로 바꿨습니다');}).catch(function(e){toast('실패: '+e.message);});
+}
+function csRemoveBooking(id,sid){
+  var sl=csSlots[id]; if(!sl) return;
+  var nm=(students[sid]&&students[sid].name)||'이 학생';
+  if(!confirm(csWhen(sl)+'\n'+nm+' 신청을 취소합니다.'))return;
+  db.ref('smClinicBookings/'+id+'/'+sid).remove().then(function(){toast(nm+' 신청 취소');}).catch(function(e){toast('실패: '+e.message);});
+}
+function csDeleteSlot(id){
+  var sl=csSlots[id]; if(!sl) return;
+  var n=Object.keys((csBooks||{})[id]||{}).length;
+  if(!confirm(csWhen(sl)+' 슬롯을 삭제합니다.'+(n?'\n신청한 '+n+'명의 신청도 함께 사라집니다.':'')))return;
+  var up={}; up['smClinicSlots/'+id]=null; up['smClinicBookings/'+id]=null;
+  db.ref().update(up).then(function(){toast('슬롯 삭제');}).catch(function(e){toast('실패: '+e.message);});
 }
 
 function renderClinicList(){
