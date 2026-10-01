@@ -76,48 +76,52 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .cal-dow{text-align:center;font-size:9.5px;font-weight:700;color:#C4C0DA;padding:2px 0 6px;letter-spacing:.6px}
 .cal-dow:first-child{color:#DE8FAC}.cal-dow:nth-child(7){color:#9B93D8}
-.cal-day{position:relative;min-height:68px;border-radius:13px;padding:5px 3px 6px;display:flex;flex-direction:column;align-items:center;
-  transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.cal-day{position:relative;min-height:72px;border-radius:13px;padding:5px 3px 6px;display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.cal-day:active{transform:scale(.95)}
+.cal-day.other-month{cursor:default}
+.cal-day.other-month:active{transform:none}
 .cal-day-num{align-self:flex-start;padding-left:3px;font-size:11px;font-weight:700;line-height:1;color:#7B76A8;font-variant-numeric:tabular-nums}
 .sun .cal-day-num{color:#DE8FAC}.sat .cal-day-num{color:#9B93D8}
 .cal-day.other-month .cal-day-num{color:#E4E1F0}
-.cal-day.rec{background:#F5F2FE;box-shadow:inset 0 0 0 1px rgba(139,127,217,.14);cursor:pointer}
-.cal-day.rec:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(139,127,217,.35),0 6px 16px -6px rgba(107,95,184,.3)}
+.cal-day.rec{background:#F5F2FE;box-shadow:inset 0 0 0 1px rgba(139,127,217,.14)}
 .cal-day.abs{background:rgba(240,166,196,.17);box-shadow:inset 0 0 0 1px rgba(222,143,172,.32)}
 .cal-day.today{box-shadow:inset 0 0 0 1.5px #A89BEB}
 .cal-day.today .cal-day-num{color:#5B4FA8}
+.cal-day.sel{box-shadow:inset 0 0 0 2px #6B5FB8,0 6px 16px -6px rgba(107,95,184,.35)}
+.cal-day.sel .cal-day-num{color:#3D3860}
 .cal-g{font-size:17px;font-weight:800;line-height:1;margin-top:4px;letter-spacing:-.3px}
 .cal-st{font-size:7.5px;line-height:1;margin-top:3px;letter-spacing:-.4px;white-space:nowrap}
 .cal-abs{font-size:10.5px;font-weight:800;color:#B4527C;margin-top:9px}
-.cal-memo{margin-top:auto;padding-top:3px;font-size:9px;font-weight:700;color:#C85F8A;line-height:1}
-.late-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#F2B36D}
-.cal-day .late-dot{position:absolute;top:5px;right:5px;box-shadow:0 0 0 2px #F5F2FE}
+.late-dot,.memo-dot,.pl-dot{display:inline-block;width:7px;height:7px;border-radius:50%}
+.late-dot{background:#F2B36D}
+.memo-dot{background:#DE8FAC}
+.pl-p{background:#A89BEB}.pl-d{background:#7FC7AC}
+.cal-flags{position:absolute;top:5px;right:5px;display:flex;gap:2px}
+.cal-flags i{box-shadow:0 0 0 1.5px #fff}
+.cal-pl{margin-top:auto;padding-top:4px;display:flex;gap:3px}
+.cal-pl .pl-dot{width:6px;height:6px}
 .st-off{color:#E4E0F5}
 .g5{color:#5B4FA8}.g4{color:#6B5FB8}.g3{color:#8B7FD9}.g2{color:#A89BEB}.g1{color:#AAA5C8}.g0{color:#C85F8A}
-.cal-legend{display:flex;justify-content:flex-end;gap:12px;padding:10px 2px 0;font-size:10.5px;font-weight:600;color:#AAA5C8}
+.cal-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 12px;padding:12px 2px 0;font-size:10.5px;font-weight:600;color:#AAA5C8}
 .cal-legend span{display:inline-flex;align-items:center;gap:5px}
 .lg-abs{width:9px;height:9px;border-radius:3px;background:rgba(240,166,196,.35);box-shadow:inset 0 0 0 1px rgba(222,143,172,.45)}
-.lg-memo{font-size:9px;font-weight:700;color:#C85F8A}
-/* ── 바텀시트 (수업 상세 · 플래너 상세 공통) ── */
-.detail-ov,.vplan-detail-ov{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;
-  background:rgba(45,38,80,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
-.detail-ov.open,.vplan-detail-ov.open{display:flex}
-.detail-modal,.vpdm{width:100%;max-width:520px;max-height:88vh;overflow-y:auto;background:#fff;border-radius:26px 26px 0 0;
-  padding:10px 20px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px -12px rgba(45,38,80,.35);
-  animation:sheetUp .32s cubic-bezier(.34,1.3,.64,1)}
-.detail-modal:before,.vpdm:before{content:'';display:block;width:38px;height:4px;border-radius:2px;background:#E4E0F5;margin:0 auto 14px}
-@keyframes sheetUp{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
-@media(min-width:600px){.detail-ov,.vplan-detail-ov{align-items:center;padding:20px}.detail-modal,.vpdm{border-radius:26px}}
-.dm-head,.vpdm-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.dm-date,.vpdm-date{font-size:17px;font-weight:800;color:#3D3860;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.lg-g{font-size:11px;font-weight:800;color:#6B5FB8}
+/* ── 날짜 카드 (학생 화면처럼 바로 보이는 기록) ── */
+.dc{padding:16px 18px 18px}
+.dc-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.dc-nav .cal-nav-btn:disabled{opacity:.3;cursor:default;transform:none}
+.dc-title{flex:1;min-width:0;text-align:center}
+.dc-cap{font-size:10px;font-weight:800;letter-spacing:1.4px;color:#8B7FD9;display:flex;align-items:center;justify-content:center;gap:8px}
+.dc-cap.past{color:#D4749B}
+.dc-today{border:none;background:rgba(139,127,217,.10);color:#6B5FB8;font-size:10.5px;font-weight:700;letter-spacing:0;font-family:inherit;
+  cursor:pointer;padding:2px 8px;border-radius:99px}
+.dc-date{font-size:17px;font-weight:800;color:#3D3860;letter-spacing:-.4px;margin-top:3px;font-variant-numeric:tabular-nums}
 .dm-num{font-size:12px;font-weight:600;color:#AAA5C8;margin-left:7px;letter-spacing:0}
-.dm-close,.vpdm-close{flex-shrink:0;width:30px;height:30px;border:none;border-radius:50%;background:#F2EFFC;color:#7B76A8;font-size:13px;cursor:pointer}
 .dm-box{border-radius:16px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
 .dm-box-lb{font-size:10.5px;font-weight:800;letter-spacing:.3px;margin-bottom:4px}
 .dm-note{background:linear-gradient(160deg,#FFF6FA,#FDEDF4);box-shadow:inset 0 0 0 1px rgba(240,166,196,.45);color:#8E3E62}
 .dm-note .dm-box-lb{color:#C85F8A}
-.dm-cmt{background:linear-gradient(160deg,#EDF9F4,#DFF2EA);color:#2F6B58}
-.dm-cmt .dm-box-lb{color:#3F8A72}
 .dm-sp{background:#F7F5FE;color:#5C5680}
 .dm-sp .dm-box-lb{color:#8B7FD9}
 .dm-absent{background:rgba(240,166,196,.17);color:#B4527C;font-weight:700}
@@ -127,23 +131,31 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .dm-g-st{font-size:15px;letter-spacing:1px;margin-top:3px;line-height:1}
 .dm-late{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#B9772F;
   background:rgba(242,179,109,.18);padding:4px 10px;border-radius:99px;white-space:nowrap}
-.dm-rows{margin:0 0 10px}
-.dm-row{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:9px 2px;border-bottom:1px solid #F2EFFC;font-size:13.5px}
-.dm-row:last-child{border-bottom:none}
-.dm-k{color:#AAA5C8;font-weight:600;font-size:12px;padding-top:2px}
-.dm-v{color:#3D3860;line-height:1.6;overflow-wrap:anywhere}
-.vpdm-item{border-radius:18px;overflow:hidden;margin-bottom:12px;background:#FBFAFF;box-shadow:inset 0 0 0 1px rgba(139,127,217,.12)}
-.vpdm-head2{padding:10px 14px 8px}
-.plan-type-badge{display:inline-flex;font-size:11px;font-weight:800;border-radius:99px;padding:3px 10px}
-.badge-plan{background:#F2EFFC;color:#6B5FB8}
-.badge-done{background:#E6F6EF;color:#357A63}
-.vpdm-img{display:block;width:100%;max-height:300px;object-fit:cover}
-.vpdm-img-ph{height:110px;background:#F2EFFC;display:flex;align-items:center;justify-content:center;font-size:12px;color:#AAA5C8}
-.vpdm-comment{margin:10px;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.6;color:#2F6B58;
-  background:linear-gradient(160deg,#EDF9F4,#DFF2EA);white-space:pre-wrap;overflow-wrap:anywhere}
-.vpdm-comment-head{font-size:10.5px;font-weight:800;color:#3F8A72;margin-bottom:3px}
-.vpdm-no-comment{padding:8px 14px 12px;font-size:12px;color:#AAA5C8}
-.vpdm-empty{text-align:center;color:#AAA5C8;padding:20px;font-size:13px}
+.dc-row{display:flex;gap:9px;align-items:flex-start;padding:5px 0}
+.dc-k{flex-shrink:0;width:64px;box-sizing:border-box;text-align:center;white-space:nowrap;font-size:10px;font-weight:700;
+  color:#8B7FD9;background:rgba(139,127,217,.10);border-radius:6px;padding:3px 0;margin-top:2px}
+.dc-k.fb{color:#3F8A72;background:rgba(127,199,172,.16)}
+.dc-v{flex:1;min-width:0;font-size:13.5px;color:#3D3860;line-height:1.65;overflow-wrap:anywhere}
+.dc-noclass{font-size:12.5px;color:#AAA5C8;text-align:center;padding:4px 0 2px}
+.dc-sec{font-size:10px;font-weight:800;letter-spacing:1.3px;color:#AAA5C8;margin:16px 2px 8px}
+.dc-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
+.dc-pl{border-radius:14px;padding:10px 11px;min-width:0}
+.dc-pl.plan{background:#F5F2FE;box-shadow:inset 0 0 0 1px rgba(139,127,217,.16)}
+.dc-pl.done{background:linear-gradient(160deg,#EDF9F4,#E2F4EC);box-shadow:inset 0 0 0 1px rgba(127,199,172,.35)}
+.dc-pl.none{background:#FBFAFF;border:1px dashed rgba(196,192,218,.7)}
+.dc-pl-h{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dc-pl-t{font-size:12px;font-weight:800}
+.dc-pl.plan .dc-pl-t{color:#5B4FA8}.dc-pl.done .dc-pl-t{color:#357A63}.dc-pl.none .dc-pl-t{color:#AAA5C8}
+.dc-pl-s{font-size:10.5px;font-weight:700;color:#AAA5C8}
+.dc-pl-wait{font-size:11px;color:#AAA5C8;margin-top:6px}
+.dc-pl-c{font-size:12px;line-height:1.6;color:#2F6B58;margin-top:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.dc-pl.plan .dc-pl-c{color:#5C5680}
+.dc-pl-c b{display:block;font-size:10px;font-weight:800;color:#3F8A72;margin-bottom:1px}
+.dc-pl-btn{margin-top:8px;width:100%;border:none;border-radius:10px;padding:7px 0;font-size:11.5px;font-weight:700;font-family:inherit;
+  cursor:pointer;background:rgba(255,255,255,.8)}
+.dc-pl.plan .dc-pl-btn{color:#6B5FB8}.dc-pl.done .dc-pl-btn{color:#3F8A72}
+.dc-pl-btn:disabled{cursor:default;opacity:.7}
+.dc-pl-img{display:block;width:100%;margin-top:8px;border-radius:10px;cursor:zoom-in}
 /* ── 상담 요청 ── */
 .csec{position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
   box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 26px -10px rgba(120,105,205,.24)}
@@ -173,29 +185,6 @@ textarea.inp{resize:vertical;min-height:96px}
 .btn-del-sent{background:none;border:none;color:#DE8FAC;font-size:11px;cursor:pointer;font-family:inherit;padding:0}
 .btn-del-sent:hover{color:#C85F8A}
 footer{text-align:center;padding:20px 0 8px;color:#C4C0DA;font-size:11.5px}
-/* ── 플래너 제출 달력 ── */
-.plan-cal-wrap{padding:10px 14px 16px}
-.plan-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.plan-cal-month{font-size:14px;font-weight:800;color:#3D3860;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
-.plan-cal-btn{background:rgba(139,127,217,.08);border:none;border-radius:11px;width:31px;height:31px;cursor:pointer;font-size:15px;
-  display:flex;align-items:center;justify-content:center;color:#8B7FD9;transition:.25s cubic-bezier(.34,1.56,.64,1)}
-.plan-cal-btn:hover{background:rgba(139,127,217,.17);transform:translateY(-1px)}
-.plan-cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.plan-cal-dow{text-align:center;font-size:9.5px;font-weight:700;color:#C4C0DA;padding:2px 0 6px;letter-spacing:.6px}
-.plan-cal-dow:first-child{color:#DE8FAC}.plan-cal-dow:nth-child(7){color:#9B93D8}
-.plan-cal-day{min-height:44px;border-radius:12px;padding:5px 3px;display:flex;flex-direction:column;align-items:center;cursor:default;
-  transition:.25s cubic-bezier(.34,1.56,.64,1)}
-.plan-cal-day-num{align-self:flex-start;padding-left:3px;font-size:11px;font-weight:700;line-height:1;color:#7B76A8;font-variant-numeric:tabular-nums}
-.plan-cal-day.sun .plan-cal-day-num{color:#DE8FAC}.plan-cal-day.sat .plan-cal-day-num{color:#9B93D8}
-.plan-cal-day.has-plan{cursor:pointer;background:#F7F5FE;box-shadow:inset 0 0 0 1px rgba(139,127,217,.12)}
-.plan-cal-day.has-plan:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(139,127,217,.35),0 6px 16px -6px rgba(107,95,184,.3)}
-.plan-cal-day.today{box-shadow:inset 0 0 0 1.5px #A89BEB}
-.plan-cal-day.today .plan-cal-day-num{color:#5B4FA8}
-.plan-cal-day.other-month .plan-cal-day-num{color:#E4E1F0}
-.plan-dot-row{display:flex;gap:3px;margin-top:6px;justify-content:center}
-.plan-dot{width:7px;height:7px;border-radius:50%}
-.plan-dot-blue{background:linear-gradient(135deg,#A89BEB,#8B7FD9)}
-.plan-dot-green{background:linear-gradient(135deg,#9DD9C4,#7FC7AC)}
 .lightbox-v{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
 .lightbox-v.open{display:flex}
 .lightbox-v img{max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain}
@@ -236,8 +225,19 @@ footer{text-align:center;padding:20px 0 8px;color:#C4C0DA;font-size:11.5px}
     </div>
   </div>
   <div>
+    <!-- 날짜 카드: 기본 오늘, ‹ › 하루씩 -->
+    <div class="card" id="dayCard">
+      <div class="dc">
+        <div class="dc-nav">
+          <button class="cal-nav-btn" onclick="moveDay(-1)" aria-label="이전 날">‹</button>
+          <div class="dc-title"><div class="dc-cap" id="dcCap"></div><div class="dc-date" id="dcDate"></div></div>
+          <button class="cal-nav-btn" id="dcNext" onclick="moveDay(1)" aria-label="다음 날">›</button>
+        </div>
+        <div id="dcBody"></div>
+      </div>
+    </div>
     <div class="card">
-      <div class="card-head">수업 달력</div>
+      <div class="card-head">학습 달력</div>
       <div class="cal-wrap">
         <div class="cal-nav">
           <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
@@ -248,29 +248,7 @@ footer{text-align:center;padding:20px 0 8px;color:#C4C0DA;font-size:11.5px}
           <div class="cal-dow">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div>
           <div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div><div class="cal-dow">토</div>
         </div>
-        <div class="cal-legend"><span><i class="late-dot"></i>지각</span><span><i class="lg-abs"></i>결석</span><span><b class="lg-memo">메모</b>전달 사항</span></div>
-      </div>
-    </div>
-    <!-- Planner calendar -->
-    <div class="card">
-      <div class="card-head">플래너 제출 달력</div>
-      <div class="plan-cal-wrap">
-        <div class="plan-cal-nav">
-          <button class="plan-cal-btn" onclick="changeVPlanMonth(-1)">‹</button>
-          <span class="plan-cal-month" id="vPlanCalMonth"></span>
-          <button class="plan-cal-btn" onclick="changeVPlanMonth(1)">›</button>
-        </div>
-        <div class="plan-cal-grid" id="vPlanCalGrid">
-          <div class="plan-cal-dow">일</div><div class="plan-cal-dow">월</div><div class="plan-cal-dow">화</div>
-          <div class="plan-cal-dow">수</div><div class="plan-cal-dow">목</div><div class="plan-cal-dow">금</div><div class="plan-cal-dow">토</div>
-        </div>
-      </div>
-    </div>
-    <!-- Planner detail modal -->
-    <div class="vplan-detail-ov" id="vPlanDetailOv" onclick="if(event.target===this)closeVPlanDetail()">
-      <div class="vpdm">
-        <div class="vpdm-head"><span class="vpdm-date" id="vpdmDate"></span><button class="vpdm-close" onclick="closeVPlanDetail()">✕</button></div>
-        <div class="vpdm-body" id="vpdmBody"></div>
+        <div class="cal-legend"><span><b class="lg-g">A~F</b>숙제</span><span><i class="pl-dot pl-p"></i>계획</span><span><i class="pl-dot pl-d"></i>완료</span><span><i class="late-dot"></i>지각</span><span><i class="memo-dot"></i>전달 메모</span><span><i class="lg-abs"></i>결석</span></div>
       </div>
     </div>
     <div class="csec">
@@ -288,16 +266,6 @@ footer{text-align:center;padding:20px 0 8px;color:#C4C0DA;font-size:11.5px}
 </div>
 <div class="lightbox-v" id="lbV" onclick="if(event.target===this)closeLbV()"><button class="lbv-close" onclick="closeLbV()">✕</button><img id="lbVImg" style="max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain"></div>
 
-<!-- 날짜 클릭 팝업 -->
-<div class="detail-ov" id="detailOv" onclick="if(event.target===this)closeDetail()">
-  <div class="detail-modal">
-    <div class="dm-head">
-      <span class="dm-date" id="dmDate"></span>
-      <button class="dm-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="dm-body" id="dmBody"></div>
-  </div>
-</div>
 <script>
 const PIC={
   _db:null,
@@ -349,7 +317,7 @@ async function loadPlannerImg(pid){
 }
 
 
-let db,sid_=null,recData={},sent=[],consultData={},calYear,calMonth,openDetailDate=null;
+let db,sid_=null,recData={},sent=[],consultData={},calYear,calMonth;
 function today(){
   const d=new Date();
   if(d.getHours()<3) d.setDate(d.getDate()-1);
@@ -424,11 +392,7 @@ function loadStudentData(stuId, stu){
       recData=s.val()||{};
       renderStats();
       renderCal();
-      // 팝업이 열려있으면 내용도 갱신
-      if(openDetailDate){
-        var updRec=buildRecMap()[openDetailDate];
-        if(updRec) showDetail(openDetailDate,updRec); else closeDetail();
-      }
+      renderDay();
     }catch(e){console.error('session render error:',e);}
   });
   db.ref('smPlanners/'+sid_).on('value',function(s){try{renderViewPlanners(s.val()||{});}catch(e){console.error('planner render error:',e);}});
@@ -493,11 +457,11 @@ function changeMonth(dir){
   calMonth+=dir;
   if(calMonth>11){calMonth=0;calYear++;}
   if(calMonth<0){calMonth=11;calYear--;}
-  closeDetail();renderCal();renderStats();
+  renderCal();renderStats();
 }
 
 function renderCal(){
-  const recMap=buildRecMap();
+  const recMap=buildRecMap(), planMap=buildPlanMap(), sel=selDate();
   const mn=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   document.getElementById('calMonth').textContent=`${calYear}년 ${mn[calMonth]}`;
   const todayStr=today();
@@ -517,25 +481,25 @@ function renderCal(){
   }
   for(let d=1;d<=daysInMonth;d++){
     const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const rec=recMap[ds];
+    const rec=recMap[ds], plans=planMap[ds]||[];
     const dow=(firstDay+d-1)%7;
     const cell=document.createElement('div');
-    cell.className='cal-day'+(ds===todayStr?' today':'')+(rec?(rec.absent?' rec abs':' rec'):'');
+    cell.className='cal-day'+(ds===todayStr?' today':'')+(rec?(rec.absent?' rec abs':' rec'):'')+(ds===sel?' sel':'');
     if(dow===0)cell.classList.add('sun');
     if(dow===6)cell.classList.add('sat');
+    let body='', flags='';
     if(rec){
       const ev=rec.eval!=null&&rec.eval>=0&&rec.eval<=5?rec.eval:null;
-      let body='';
       if(rec.absent) body='<div class="cal-abs">결석</div>';
       else if(ev!==null) body=`<div class="cal-g g${ev}">${GRADE_L[ev]}</div><div class="cal-st g${ev}">${starRow(ev)}</div>`;
-      const late=(!rec.absent&&rec.late)?'<i class="late-dot"></i>':'';
-      const memo=(rec.note&&String(rec.note).trim())?'<div class="cal-memo">메모</div>':'';
-      cell.innerHTML=`<span class="cal-day-num">${d}</span>${late}${body}${memo}`;
-      // 칸에 그린 세션을 그대로 넘긴다 (같은 날 빈 세션이 먼저 잡히던 문제)
-      cell.addEventListener('click',(function(d,r){return function(){showDetail(d,r);};})(ds,rec));
-    }else{
-      cell.innerHTML=`<span class="cal-day-num">${d}</span>`;
+      if(!rec.absent&&rec.late) flags+='<i class="late-dot"></i>';
+      if(rec.note&&String(rec.note).trim()) flags+='<i class="memo-dot"></i>';
     }
+    let pl='';
+    if(plans.some(p=>p.type!=='done')) pl+='<i class="pl-dot pl-p"></i>';
+    if(plans.some(p=>p.type==='done')) pl+='<i class="pl-dot pl-d"></i>';
+    cell.innerHTML=`<span class="cal-day-num">${d}</span>${flags?`<span class="cal-flags">${flags}</span>`:''}${body}${pl?`<span class="cal-pl">${pl}</span>`:''}`;
+    cell.addEventListener('click',(function(d){return function(){selectDay(d,true);};})(ds));
     grid.appendChild(cell);
   }
   const total=firstDay+daysInMonth;
@@ -548,126 +512,112 @@ function renderCal(){
   }
 }
 
-function showDetail(ds,rec){
-  // 빈 세션이면 팝업 열지 않음
-  if(!rec||!hasRecData(rec)) return;
-  const[y,m,d]=ds.split('-');
-  const dow=['일','월','화','수','목','금','토'][new Date(+y,+m-1,+d).getDay()];
-  const ev=rec.eval!=null&&rec.eval>=0&&rec.eval<=5?rec.eval:null;
-  const absent=!!rec.absent, late=!absent&&!!rec.late;
-  document.getElementById('dmDate').innerHTML=`${+m}월 ${+d}일 (${dow})`+(rec.num?`<span class="dm-num">${esc(rec.num)}회차</span>`:'');
-  const box=(cls,lb,t)=>`<div class="dm-box ${cls}"><div class="dm-box-lb">${lb}</div>${escBr(t)}</div>`;
-  const has=v=>v!=null&&String(v).trim()!=='';
-  let h='';
-  if(has(rec.note)) h+=box('dm-note','선생님이 전하는 말',rec.note);
-  if(absent) h+='<div class="dm-box dm-absent">결석 처리된 날입니다</div>';
-  else if(ev!==null) h+=`<div class="dm-grade"><span class="dm-g g${ev}">${GRADE_L[ev]}</span><div><div class="dm-g-lb">숙제 완성도${ev===0?' · 안함':''}</div><div class="dm-g-st g${ev}">${starRow(ev)}</div></div>${late?'<span class="dm-late"><i class="late-dot"></i>지각</span>':''}</div>`;
-  else if(late) h+='<div class="dm-grade"><span class="dm-late" style="margin-left:0"><i class="late-dot"></i>지각</span></div>';
-  const rows=[['진도',rec.prog],['지난 숙제',rec.prevHw],['오늘 숙제',rec.hwC],['클리닉',rec.cli]].filter(r=>has(r[1]));
-  if(rows.length) h+='<div class="dm-rows">'+rows.map(r=>`<div class="dm-row"><span class="dm-k">${r[0]}</span><span class="dm-v">${escBr(r[1])}</span></div>`).join('')+'</div>';
-  if(has(rec.comment)) h+=box('dm-cmt','숙제 코멘트',rec.comment);
-  if(has(rec.special)) h+=box('dm-sp','특이사항',rec.special);
-  document.getElementById('dmBody').innerHTML=h;
-  openDetailDate=ds;
-  document.getElementById('detailOv').classList.add('open');
-  document.body.style.overflow='hidden';
+// ── 날짜 카드 ──
+// _selDate가 null이면 '오늘'(3시 기준). ‹ › 는 하루씩, 오늘 이후로는 가지 않는다
+var _selDate=null, _vPlannerData={}, _dcPlans={}, _dcShown={}, _dcShownDate=null;
+function selDate(){ return _selDate||today(); }
+function addDaysStr(ds,n){
+  var p=ds.split('-'), d=new Date(+p[0],+p[1]-1,+p[2]+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-function closeDetail(){
-  openDetailDate=null;
-  document.getElementById('detailOv').classList.remove('open');
-  document.body.style.overflow='';
+function buildPlanMap(){
+  var m={};
+  Object.entries(_vPlannerData||{}).forEach(function(e){
+    var p=e[1]; if(!p||!p.date) return;
+    (m[p.date]=m[p.date]||[]).push(Object.assign({},p,{_pid:e[0]}));
+  });
+  return m;
+}
+function renderViewPlanners(data){ _vPlannerData=data||{}; renderCal(); renderDay(); }
+function selectDay(ds,scroll){
+  _selDate=(ds===today())?null:ds;
+  // 달력 월을 선택한 날에 맞춘다 (하루씩 넘기다 월이 바뀌는 경우)
+  var p=selDate().split('-');
+  if(+p[0]!==calYear||+p[1]-1!==calMonth){ calYear=+p[0]; calMonth=+p[1]-1; renderStats(); }
+  renderCal(); renderDay();
+  if(scroll){ var c=document.getElementById('dayCard'); if(c&&c.scrollIntoView) c.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+function moveDay(dir){
+  var n=addDaysStr(selDate(),dir);
+  if(dir>0&&n>today()) return;
+  selectDay(n,false);
+}
+function goToday(){ selectDay(today(),false); }
+function renderDay(){
+  var body=document.getElementById('dcBody'); if(!body) return;
+  var ds=selDate(), td=today(), isToday=ds===td;
+  if(_dcShownDate!==ds){ _dcShown={}; _dcShownDate=ds; }
+  var p=ds.split('-'), dow=['일','월','화','수','목','금','토'][new Date(+p[0],+p[1]-1,+p[2]).getDay()];
+  var rec=buildRecMap()[ds], plans=buildPlanMap()[ds]||[];
+  var cap=document.getElementById('dcCap');
+  cap.className='dc-cap'+(isToday?'':' past');
+  cap.innerHTML=isToday?'TODAY':(ds<td?'지난 날':'다가올 날')+'<button class="dc-today" onclick="goToday()">오늘로</button>';
+  document.getElementById('dcDate').innerHTML=`${+p[1]}월 ${+p[2]}일 (${dow})`+(rec&&rec.num?`<span class="dm-num">${esc(rec.num)}회차</span>`:'');
+  document.getElementById('dcNext').disabled=(ds>=td);
+  var has=function(v){return v!=null&&String(v).trim()!=='';};
+  var h='';
+  if(rec){
+    if(has(rec.note)) h+=`<div class="dm-box dm-note"><div class="dm-box-lb">선생님이 전하는 말</div>${escBr(rec.note)}</div>`;
+    var ev=rec.eval!=null&&rec.eval>=0&&rec.eval<=5?rec.eval:null;
+    var absent=!!rec.absent, late=!absent&&!!rec.late;
+    if(absent) h+='<div class="dm-box dm-absent">결석 처리된 날입니다</div>';
+    else if(ev!==null) h+=`<div class="dm-grade"><span class="dm-g g${ev}">${GRADE_L[ev]}</span><div><div class="dm-g-lb">숙제 완성도${ev===0?' · 안함':''}</div><div class="dm-g-st g${ev}">${starRow(ev)}</div></div>${late?'<span class="dm-late"><i class="late-dot"></i>지각</span>':''}</div>`;
+    else if(late) h+='<div class="dm-grade"><span class="dm-late" style="margin-left:0"><i class="late-dot"></i>지각</span></div>';
+    [['진도',rec.prog],['지난 숙제',rec.prevHw],['오늘 숙제',rec.hwC],['클리닉',rec.cli],['숙제 피드백',rec.comment,'fb']].forEach(function(r){
+      if(has(r[1])) h+=`<div class="dc-row"><span class="dc-k${r[2]?' '+r[2]:''}">${r[0]}</span><span class="dc-v">${escBr(String(r[1]).trim())}</span></div>`;
+    });
+    if(has(rec.special)) h+=`<div class="dm-box dm-sp" style="margin-top:10px"><div class="dm-box-lb">특이사항</div>${escBr(rec.special)}</div>`;
+  }else{
+    h+=`<div class="dc-noclass">${ds>td?'아직 기록이 없는 날이에요':'수업 기록이 없는 날이에요'}</div>`;
+  }
+  // 플래너: 오늘·지난 날은 제출 여부까지, 미래는 제출된 것만
+  var pl=plans.filter(function(x){return x.type!=='done';}), dn=plans.filter(function(x){return x.type==='done';});
+  if(plans.length||ds<=td){
+    _dcPlans={};
+    h+='<div class="dc-sec">PLANNER</div><div class="dc-plans">'+plTiles(pl,'plan','계획 플래너')+plTiles(dn,'done','완료 플래너')+'</div>';
+  }
+  body.innerHTML=h;
+  // 다시 그려도 이미 펼친 사진은 유지 (IndexedDB 캐시라 재조회 부담 없음)
+  Object.keys(_dcShown).forEach(function(pid){
+    var b=document.getElementById('dcb_'+pid); if(b) showPlanImg(pid,b);
+  });
+}
+function plTiles(list,type,label){
+  if(!list.length) return `<div class="dc-pl none"><div class="dc-pl-h"><span class="dc-pl-t">${label}</span><span class="dc-pl-s">제출 전</span></div></div>`;
+  return list.slice().sort(function(a,b){return(a.ts||0)-(b.ts||0);}).map(function(x){
+    _dcPlans[x._pid]=x;
+    var c=(x.comment&&String(x.comment).trim())
+      ?`<div class="dc-pl-c"><b>선생님 코멘트</b>${esc(String(x.comment).trim())}</div>`
+      :'<div class="dc-pl-wait">코멘트 대기 중</div>';
+    return `<div class="dc-pl ${type}"><div class="dc-pl-h"><span class="dc-pl-t">${label}</span><span class="dc-pl-s">제출</span></div>${c}`
+      +`<button class="dc-pl-btn" id="dcb_${x._pid}" onclick="showPlanImg('${x._pid}',this)">사진 보기</button></div>`;
+  }).join('');
+}
+// 사진은 눌렀을 때만 불러온다 (대역폭)
+function showPlanImg(pid,btn){
+  var x=_dcPlans[pid]; if(!x||!btn) return;
+  _dcShown[pid]=1;
+  btn.disabled=true; btn.textContent='불러오는 중...';
+  var direct=x.imageData||x.thumbData||x.imageUrl||'';
+  (direct?Promise.resolve(direct):loadPlannerImg(pid)).then(function(src){
+    if(!btn.isConnected) return;
+    if(!src){ btn.textContent='사진이 없어요'; return; }
+    var img=document.createElement('img');
+    img.className='dc-pl-img'; img.src=src; img.alt='플래너 사진';
+    img.addEventListener('click',function(){openLbV(src);});
+    btn.replaceWith(img);
+  });
 }
 
-var _vPlanYear, _vPlanMonth, _vPlannerData={};
-function renderViewPlanners(data){
-  _vPlannerData=data;
-  if(!_vPlanYear){var now=new Date();_vPlanYear=now.getFullYear();_vPlanMonth=now.getMonth();}
-  renderVPlanCal();
-}
-function changeVPlanMonth(dir){
-  _vPlanMonth+=dir;
-  if(_vPlanMonth>11){_vPlanMonth=0;_vPlanYear++;}
-  if(_vPlanMonth<0){_vPlanMonth=11;_vPlanYear--;}
-  renderVPlanCal();
-}
-function renderVPlanCal(){
-  var mn=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  document.getElementById('vPlanCalMonth').textContent=_vPlanYear+'년 '+mn[_vPlanMonth];
-  var todayStr=today();
-  var firstDay=new Date(_vPlanYear,_vPlanMonth,1).getDay();
-  var daysInMonth=new Date(_vPlanYear,_vPlanMonth+1,0).getDate();
-  var daysInPrev=new Date(_vPlanYear,_vPlanMonth,0).getDate();
-  var dateMap={};
-  Object.entries(_vPlannerData).forEach(function([pid_,p]){if(!p.date)return;if(!dateMap[p.date])dateMap[p.date]=[];dateMap[p.date].push(Object.assign({},p,{_pid:pid_}));});
-  var grid=document.getElementById('vPlanCalGrid');
-  grid.innerHTML='<div class="plan-cal-dow">일</div><div class="plan-cal-dow">월</div><div class="plan-cal-dow">화</div><div class="plan-cal-dow">수</div><div class="plan-cal-dow">목</div><div class="plan-cal-dow">금</div><div class="plan-cal-dow">토</div>';
-  for(var i=firstDay-1;i>=0;i--){var cell=document.createElement('div');cell.className='plan-cal-day other-month';cell.innerHTML='<span class="plan-cal-day-num">'+(daysInPrev-i)+'</span>';grid.appendChild(cell);}
-  for(var d=1;d<=daysInMonth;d++){
-    var ds=_vPlanYear+'-'+String(_vPlanMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    var dow=(firstDay+d-1)%7;
-    var plans=dateMap[ds]||[];
-    var cell=document.createElement('div');
-    var cls='plan-cal-day'+(ds===todayStr?' today':'');
-    if(dow===0)cls+=' sun';if(dow===6)cls+=' sat';
-    if(plans.length)cls+=' has-plan';
-    cell.className=cls;
-    var dots='';
-    if(plans.length){
-      if(plans.some(function(p){return p.type!=='done';}))dots+='<div class="plan-dot plan-dot-blue"></div>';
-      if(plans.some(function(p){return p.type==='done';}))dots+='<div class="plan-dot plan-dot-green"></div>';
-    }
-    cell.innerHTML='<span class="plan-cal-day-num">'+d+'</span>'+(dots?'<div class="plan-dot-row">'+dots+'</div>':'');
-    if(plans.length)(function(date,ps){cell.addEventListener('click',function(){openVPlanDetail(date,ps);});})(ds,plans);
-    grid.appendChild(cell);
-  }
-  var rem=(7-(firstDay+daysInMonth)%7)%7;
-  for(var d=1;d<=rem;d++){var cell=document.createElement('div');cell.className='plan-cal-day other-month';cell.innerHTML='<span class="plan-cal-day-num">'+d+'</span>';grid.appendChild(cell);}
-}
-function openVPlanDetail(ds,plans){
-  var p2=ds.split('-');
-  document.getElementById('vpdmDate').textContent=p2[0]+'년 '+(+p2[1])+'월 '+(+p2[2])+'일';
-  var html='';
-  plans.sort(function(a,b){return(a.ts||0)-(b.ts||0);}).forEach(function(p){
-    var badge=p.type==='done'?'<span class="plan-type-badge badge-done">완료 플래너</span>':'<span class="plan-type-badge badge-plan">계획 플래너</span>';
-    var cmt=p.comment?'<div class="vpdm-comment"><div class="vpdm-comment-head">선생님 코멘트</div>'+esc(p.comment)+'</div>':'<div class="vpdm-no-comment">코멘트를 기다리는 중이에요</div>';
-    var thumbSrc=p.imageData||p.thumbData||p.imageUrl||'';
-    var imgPart='';
-    if(thumbSrc){
-      imgPart='<img class="vpdm-img" src="'+thumbSrc+'" loading="lazy">';
-    } else if(p._pid){
-      // 신형/마이그레이션: IndexedDB 캐시 → smPlannerImages
-      var pid_=p._pid||'';
-      imgPart='<div class="vpdm-img-ph" id="vpdmimg_'+pid_+'">불러오는 중...</div>';
-    }
-    html+='<div class="vpdm-item"><div class="vpdm-head2">'+badge+'</div>'+imgPart+cmt+'</div>';
-  });
-  document.getElementById('vpdmBody').innerHTML=html||'<p class="vpdm-empty">없음</p>';
-  // 신형 이미지 async 로드 (IndexedDB 캐시 우선)
-  plans.forEach(function(p){
-    var pid_=p._pid||'';
-    if(!pid_||p.thumbData||p.imageData||p.imageUrl) return;
-    var el=document.getElementById('vpdmimg_'+pid_);
-    if(!el) return;
-    loadPlannerImg(pid_).then(function(src){
-      if(!src){el.style.display='none';return;}
-      var img=document.createElement('img');
-      img.className='vpdm-img';img.src=src;img.loading='lazy';
-      el.replaceWith(img);
-    });
-  });
-  document.getElementById('vPlanDetailOv').classList.add('open');
-  document.body.style.overflow='hidden';
-}
 // Firebase 재연결 시 자동 갱신
 window.addEventListener('focus', function(){
   if(sid_ && db){
     db.ref('smSessions/'+sid_).once('value', function(s){
-      try{recData=s.val()||{};renderStats();renderCal();}catch(e){}
+      try{recData=s.val()||{};renderStats();renderCal();renderDay();}catch(e){}
     });
   }
 });
 
-function closeVPlanDetail(){document.getElementById('vPlanDetailOv').classList.remove('open');document.body.style.overflow='';}
 
 function openLbV(src){document.getElementById('lbVImg').src=src;document.getElementById('lbV').classList.add('open');document.body.style.overflow='hidden';}
 function closeLbV(){document.getElementById('lbV').classList.remove('open');document.body.style.overflow='';}
