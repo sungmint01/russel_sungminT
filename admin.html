@@ -3559,6 +3559,7 @@ async function runAic(){
       res.innerHTML = '<div class="aic-err">'+ (d.error || '초안을 만들지 못했습니다') +'</div>';
     }else{
       res.innerHTML = d.drafts.map(function(t){
+        if(_aicKind === 'parent') t = aicFillName(t);   // {이름} → 선택한 학생 이름 (브라우저 안에서만)
         var esc = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         return '<div class="aic-card" onclick="useAicDraft(this)">'+esc+'</div>';
       }).join('');
@@ -3568,6 +3569,24 @@ async function runAic(){
   }finally{
     btn.disabled = false; btn.textContent = '초안 만들기';
   }
+}
+// 학생 이름은 Gemini로 보내지 않는다. Worker는 {이름} 자리표시만 쓰고, 여기서 바꿔 넣는다.
+// 부르는 이름: 성 뺀 이름 + 받침 있으면 '이' (권혜리→혜리, 김민준→민준이) → 조사는 항상 모음 뒤 형태
+function aicNameStem(full){
+  var n = String(full||'').replace(/\s+/g,'');
+  if(!n) return '아이';
+  if(!/^[가-힣]+$/.test(n)) return n;
+  var two = ['남궁','황보','제갈','선우','독고','사공','서문','동방'];
+  var g = (n.length >= 4 && two.indexOf(n.slice(0,2)) >= 0) ? n.slice(2) : (n.length >= 2 ? n.slice(1) : n);
+  return ((g.charCodeAt(g.length-1) - 0xAC00) % 28) ? g + '이' : g;
+}
+var AIC_JOSA = { '이에게':'에게','이한테':'한테','이에요':'예요','이가':'가','이는':'는','이를':'를','이와':'와',
+                 '이랑':'랑','이도':'도','이의':'의','은':'는','을':'를','과':'와','이':'가' };
+function aicFillName(t){
+  var stem = aicNameStem((students[uid_]||{}).name);
+  // 단독 '이'는 뒤가 띄어쓰기·문장부호일 때만 조사로 본다 ({이름}이번 주 같은 경우 보호)
+  return String(t).replace(/\{이름\}(이에게|이한테|이에요|이가|이는|이를|이와|이랑|이도|이의|은|을|과|이(?=[\s.,!?]|$))?/g,
+    function(m, j){ return stem + (j ? AIC_JOSA[j] : ''); });
 }
 function useAicDraft(el){
   if(!_aicTarget) return;

@@ -143,7 +143,9 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .tl-title{position:relative;font-size:14.5px;font-weight:800;color:#3D3860;margin-top:5px;letter-spacing:-.3px}
 .tl-state{position:relative;font-size:11.5px;font-weight:600;color:#C4C0DA;margin-top:4px;font-variant-numeric:tabular-nums}
 .tl-state.ok{color:#56A08A}
-.tl-act{margin-top:4px}
+.tl-state.staged{color:#6B5FB8;font-weight:700}
+.tl-wrap.off-today .tl-state.staged{color:#B4527C}
+.tl-act{margin-top:10px}
 .tl-act-lb{font-size:11.5px;font-weight:700;color:#8B7FD9;padding:0 4px 9px}
 .tl-cmt{position:relative;margin-top:11px;padding-top:10px;border-top:1px dashed rgba(139,127,217,.22);display:none}
 .tl-cmt-h{font-size:9.5px;letter-spacing:1.3px;font-weight:700;color:#56A08A;margin-bottom:5px}
@@ -821,6 +823,8 @@ function fmtDay(ds) {
   return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + WD[d.getDay()] + ')';
 }
 function renderPlanSlots() {
+  // 사진을 고른 뒤 다른 칸이나 날짜로 옮기면 골라둔 사진은 버린다 (엉뚱한 칸에 제출 방지)
+  if (_stagedKey && _stagedKey !== planTargetDate() + '|' + planType) clearStaged();
   var base = baseDate();
   var isToday = (base === todayForPlan());
   var wrap = document.getElementById('tlWrap');
@@ -846,6 +850,10 @@ function renderPlanSlots() {
     dot.className = 'tl-dot' + (sub ? ' filled' : '');
     st.className = 'tl-state' + (sub ? ' ok' : '');
     st.textContent = sub ? ('제출 완료 · ' + fmtTime(sub.ts)) : '눌러서 사진 올리기';
+    if (_stagedKey && _selSlot === slot) {
+      st.className = 'tl-state staged';
+      st.textContent = '사진을 골랐어요 · 바로 아래 제출하기를 눌러 주세요';
+    }
   });
 
   // 카드 안 코멘트
@@ -895,6 +903,26 @@ function renderPlanSlots() {
     doneBox.style.display = 'none';
     upWrap.style.display = 'block';
   }
+  placeAct();
+}
+// 제출 패널(미리보기·제출 버튼·제출된 사진)을 선택한 카드 바로 아래에 둔다
+// (타임라인 맨 아래에 있어 사진을 고르고도 안 보이던 문제)
+function placeAct() {
+  var act = document.getElementById('tlAct');
+  var card = document.getElementById({ plan: 'cardPlan', done: 'cardDone', next: 'cardNext' }[_selSlot]);
+  var node = card && card.parentNode;
+  if (!act || !node || node.style.display === 'none') return;
+  if (act.parentNode !== node) node.appendChild(act);
+}
+var _stagedKey = null;   // 사진을 고른 칸: '날짜|plan|done'
+function clearStaged() {
+  _stagedKey = null;
+  selectedFile = null;
+  var img = document.getElementById('previewImg');
+  if (img) { img.style.display = 'none'; img.src = ''; }
+  var f = document.getElementById('fileInput'); if (f) f.value = '';
+  var b = document.getElementById('uploadBtn'); if (b) b.disabled = true;
+  var m = document.getElementById('uploadMsg'); if (m && m.className.indexOf('ok') < 0) m.textContent = '';
 }
 
 // 카드를 누르면 그 슬롯을 선택하고 바로 사진 선택창을 연다
@@ -964,7 +992,7 @@ function jumpToDate(ds) {
   if (w) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function startRedo() { _redo = true; renderPlanSlots(); }
+function startRedo() { _redo = true; renderPlanSlots(); openPicker(); }   // 버튼을 누르면 바로 사진 선택창
 
 // ── 클리닉 신청 ──
 // smClinicSlots/{날짜_시작}  date, start, end, cap / smClinicBookings/{slotId}/{stuId} = 신청 시각
@@ -1062,6 +1090,10 @@ function onFileSelect(e) {
     if (wrap) wrap.style.display = 'block';
     var dbx = document.getElementById('doneBox');
     if (dbx) dbx.style.display = 'none';
+    _stagedKey = planTargetDate() + '|' + planType;
+    renderPlanSlots();
+    var w = document.getElementById('uploadWrap');
+    if (w && w.scrollIntoView) setTimeout(function () { w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
   };
   reader.readAsDataURL(file);
   document.getElementById('uploadBtn').disabled = false;
@@ -1130,6 +1162,7 @@ async function uploadPlanner() {
     document.getElementById('previewImg').src = '';
     document.getElementById('fileInput').value = '';
     selectedFile = null;
+    _stagedKey = null;
     btn.disabled = false;
     btn.innerHTML = '플래너 제출하기';
     setTimeout(() => { msg.textContent = ''; }, 4000);
@@ -1468,7 +1501,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 </script>
 
   <nav class="tabbar">
-    <a href="./student.html" id="tabPlan" class="on"><span class="tb-ico">📝</span><span class="tb-lb">플래너</span></a>
+    <a href="./student.html" id="tabPlan" class="on"><span class="tb-ico">📝</span><span class="tb-lb">학습 현황</span></a>
     <a href="./textbook_q.html" id="tabBook"><span class="tb-ico">📖</span><span class="tb-lb">교재 질문</span><span class="tb-badge" id="tbBadge"></span></a>
   </nav>
 </body>
