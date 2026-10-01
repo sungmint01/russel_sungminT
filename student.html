@@ -77,7 +77,9 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .hdr-temp-tube{position:relative;width:17px;height:46px;margin:0 auto;background:rgba(255,255,255,.18);
   border-radius:99px;overflow:hidden}
 .hdr-temp-fill{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:99px 99px 0 0;
-  background:linear-gradient(180deg,#E9C6F0,#F0A6C4);transition:height .6s cubic-bezier(.34,1.4,.64,1)}
+  /* 색을 관(46px) 기준으로 고정: 많이 찰수록 위쪽 진한 로즈가 드러난다 (예전엔 꼭대기가 옅어 덜 찬 듯 보였음) */
+  background:linear-gradient(0deg,#F0A6C4 0%,#DE8FAC 55%,#C85F8A 100%) bottom/100% 46px no-repeat;
+  transition:height .6s cubic-bezier(.34,1.4,.64,1)}
 .hdr-temp-bulb{width:21px;height:21px;margin:-6px auto 0;border-radius:50%;
   background:linear-gradient(140deg,#F0A6C4,#DE8FAC);box-shadow:0 2px 7px rgba(200,100,150,.35)}
 .hdr-temp-txt{font-size:9px;font-weight:800;color:#FCE7F0;margin-top:5px;letter-spacing:-.2px}
@@ -725,6 +727,7 @@ function renderHomework() {
 function updatePlanDateNotice() { renderPlanSlots(); }
 
 var _planAll = {}, _redo = false;
+var _showSub = false;   // 제출된 사진 펼침 여부 (로그인 직후엔 접힌 상태, 카드를 눌러야 보임)
 
 // _baseDate: 타임라인이 보여주는 날 (null이면 오늘) / planDate: 실제로 올릴 날
 var _baseDate = null, _selSlot = 'plan';
@@ -849,7 +852,9 @@ function renderPlanSlots() {
     card.className = 'tl-card paper' + (_selSlot === slot ? ' sel' : '');
     dot.className = 'tl-dot' + (sub ? ' filled' : '');
     st.className = 'tl-state' + (sub ? ' ok' : '');
-    st.textContent = sub ? ('제출 완료 · ' + fmtTime(sub.ts)) : '눌러서 사진 올리기';
+    st.textContent = sub
+      ? ('제출 완료 · ' + fmtTime(sub.ts) + ((_selSlot === slot && _showSub && !_redo) ? ' · 접기' : ' · 눌러서 사진 보기'))
+      : '눌러서 사진 올리기';
     if (_stagedKey && _selSlot === slot) {
       st.className = 'tl-state staged';
       st.textContent = '사진을 골랐어요 · 바로 아래 제출하기를 눌러 주세요';
@@ -889,7 +894,7 @@ function renderPlanSlots() {
   var upWrap = document.getElementById('uploadWrap');
   var act = document.getElementById('tlAct');
   var staged = !!(document.getElementById('previewImg') || {}).src && document.getElementById('previewImg').style.display !== 'none';
-  if (act) act.style.display = (sub && !_redo) || staged ? 'block' : 'none';
+  if (act) act.style.display = (sub && !_redo && _showSub) || staged ? 'block' : 'none';
   if (sub && !_redo) {
     doneBox.style.display = 'block';
     upWrap.style.display = 'none';
@@ -929,14 +934,20 @@ function clearStaged() {
 function tapSlot(slot) {
   var wasSel = (_selSlot === slot);
   var sub = findSubmission(slotDate(slot), slotType(slot));
-  selectSlot(slot);
-  if (sub && !_redo) return;          // 이미 제출됨 -> 사진만 보여줌
+  var wasShown = _showSub;
+  selectSlot(slot);                   // 여기서 접힘(_showSub=false)
+  if (sub && !_redo) {                // 이미 제출됨 -> 누를 때마다 사진 펼치기/접기
+    _showSub = !(wasSel && wasShown);
+    renderPlanSlots();
+    return;
+  }
   if (wasSel || !sub) openPicker();
 }
 function selectSlot(slot) {
   _selSlot = slot;
   planType = slotType(slot);
   _redo = false;
+  _showSub = false;
   var inp = document.getElementById('planDate');
   if (inp) inp.value = slotDate(slot);
   renderPlanSlots();
@@ -1154,6 +1165,7 @@ async function uploadPlanner() {
       } catch (e) {}
     }
     _redo = false;
+    _showSub = true;     // 방금 올린 사진은 펼쳐서 보여준다
     const label = planType === 'plan' ? '계획' : '완료';
     msg.textContent = `✅ ${label} 플래너 제출 완료!`;
     msg.className = 'upload-msg ok';
