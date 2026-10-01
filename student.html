@@ -691,9 +691,9 @@ function renderHomework() {
   const upTo = (typeof _baseDate !== 'undefined' && _baseDate) ? _baseDate : null;
   const weekAgo = upTo ? addDays(upTo, -7)
     : _wd.getFullYear() + '-' + String(_wd.getMonth()+1).padStart(2,'0') + '-' + String(_wd.getDate()).padStart(2,'0');
-  // 숙제·진도·코멘트 중 하나라도 있으면 표시 대상
+  // 숙제·진도·클리닉·코멘트 중 하나라도 있으면 표시 대상
   const arr = Object.values(sessions)
-    .filter(r => (r.hwC || r.prog || r.comment) && r.date && r.date >= weekAgo && (!upTo || r.date <= upTo))
+    .filter(r => (r.hwC || r.prog || (r.cli && String(r.cli).trim()) || r.comment) && r.date && r.date >= weekAgo && (!upTo || r.date <= upTo))
     .sort((a,b) => (b.date||'').localeCompare(a.date||''));
   const el = document.getElementById('hwContent');
   if (!arr.length) {
@@ -709,6 +709,7 @@ function renderHomework() {
   let rows = '';
   if (r.prog) rows += `<div class="hw-row"><span class="hw-row-k">진도</span><span class="hw-row-v">${esc(r.prog).split('\n').join('<br>')}</span></div>`;
   if (r.hwC) rows += `<div class="hw-row"><span class="hw-row-k">숙제</span><span class="hw-row-v">${esc(r.hwC).split('\n').join('<br>')}</span></div>`;
+  if (r.cli && String(r.cli).trim()) rows += `<div class="hw-row"><span class="hw-row-k">클리닉</span><span class="hw-row-v">${esc(String(r.cli).trim()).split('\n').join('<br>')}</span></div>`;
 
   const cmt = r.comment
     ? `<div class="hw-cmt"><div class="hw-cmt-h">숙제 코멘트</div><div class="hw-cmt-b">${esc(r.comment).split('\n').join('<br>')}</div></div>`
