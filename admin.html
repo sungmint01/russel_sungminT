@@ -3489,7 +3489,7 @@ function tuid(){return Date.now().toString(36)+Math.random().toString(36).slice(
 
 /* ===== AI 코멘트 초안 ===== */
 /* 배포 후 Cloudflare Worker 주소를 여기에 넣으세요 */
-var AIC_ENDPOINT = 'https://sungmint-ai.zpcp1212.workers.dev';
+var AIC_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx47ZmWUXtLq7NbJ_sPvan37fkYV3hoeCGwliCJzsLLvpahP9aWwLJ_mkQCGWVOgYNR/exec';   // Google Apps Script 중계 (Cloudflare는 홍콩 경유 시 Gemini 거절)
 
 var AIC_PRESET = {
   planner: ['집중 잘함','계획 충실','분량 적음','계획만 세움','오답정리 필요',
@@ -3551,7 +3551,8 @@ async function runAic(){
   try{
     var r = await fetch(AIC_ENDPOINT, {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      // text/plain: 사전 확인(preflight) 없이 보내는 형식. Apps Script 웹 앱은 이 형식만 받는다
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({ keywords: kw, kind: _aicKind, tone: _aicTone })
     });
     var d = await r.json();
