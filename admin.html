@@ -308,6 +308,17 @@ textarea.inp{resize:vertical;min-height:68px}
 .sb-class-head{padding:7px 14px 3px;font-size:10px;font-weight:700;color:#AAA5C8;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
 .sb-class-hw{background:none;border:none;color:#7B76A8;font-size:10px;cursor:pointer;font-family:inherit;padding:2px 6px;border-radius:4px;transition:.15s}
 .sb-class-hw:hover{background:rgba(116,179,216,.15);color:var(--bl)}
+.sb-class-days{font-size:9.5px;font-weight:600;letter-spacing:0;text-transform:none;color:#9DD9C4;margin-left:6px}
+.sb-class-days.none{color:#7B76A8}
+/* 반 수업 요일 */
+.cd-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:4px 0 10px}
+.cd-day{border:1.5px solid rgba(139,127,217,.22);background:#FBFAFF;color:#7B76A8;border-radius:12px;padding:10px 0;font-size:14px;
+  font-weight:700;font-family:inherit;cursor:pointer;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.cd-day:active{transform:scale(.92)}
+.cd-day.on{background:linear-gradient(135deg,#8B7FD9,#A89BEB);border-color:transparent;color:#fff;box-shadow:0 4px 12px -4px rgba(107,95,184,.45)}
+.cd-day.sun{color:#DE8FAC}.cd-day.sun.on{color:#fff}
+.cd-hint{font-size:11.5px;color:#7B76A8;line-height:1.6;background:#F7F5FE;border-radius:12px;padding:10px 12px}
+.cd-hint b{color:#5B4FA8}
 .si-class{color:#7B76A8;font-size:10px;margin-top:1px}
 /* Bulk HW modal */
 .bm-class-chip{display:inline-flex;align-items:center;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:600;border:1.5px solid #e2e8f0;background:#f8fafc;cursor:pointer;transition:.15s;margin:0 4px 6px 0}
@@ -704,6 +715,21 @@ textarea.inp{resize:vertical;min-height:68px}
   </div>
 </div>
 <!-- Bulk HW Modal -->
+<div class="ov" id="cdm" onclick="if(event.target===this)closeClassDays()">
+  <div class="mb">
+    <div class="mh"><h3 id="cdmTitle">수업 요일</h3><button class="mc" onclick="closeClassDays()">✕</button></div>
+    <div class="mbd">
+      <label class="fl">이 반이 수업하는 요일</label>
+      <div class="cd-days" id="cdmDays"></div>
+      <div class="cd-hint" id="cdmHint"></div>
+    </div>
+    <div class="mf">
+      <button class="btn-cn" onclick="clearClassDays()" style="margin-right:auto">설정 지우기</button>
+      <button class="btn-cn" onclick="closeClassDays()">취소</button>
+      <button class="btn-sv" onclick="saveClassDays()">저장</button>
+    </div>
+  </div>
+</div>
 <div class="ov" id="bm">
   <div class="mb wide">
     <div class="mh"><h3>반 일괄 숙제 등록</h3><button class="mc" onclick="closeBM()">✕</button></div>
@@ -1545,6 +1571,12 @@ function showApp(){
   document.getElementById('loginPage').style.display='none';
   document.getElementById('app').style.display='block';
   db.ref('smStudents').on('value',s=>{students=s.val()||{};renderSidebar();if(uid_&&mode==='student')renderHeader();});
+  // 반별 수업 요일 (지난 숙제 자동 입력 기준). 작은 노드라 상시 구독
+  db.ref('smClassDays').on('value',s=>{
+    classDays={};
+    Object.values(s.val()||{}).forEach(v=>{ if(v&&v.cls&&v.days) classDays[v.cls]=String(v.days); });
+    renderSidebar();
+  });
   db.ref('smConsultations').on('value',s=>{consults=s.val()||{};renderSidebar();if(mode==='consult')renderConsultView()});
   // smPlanners: 실시간 구독 제거 (이미지 없는 메타데이터만이라도 필요시만 로드)
   db.ref('smPlanners').get().then(s=>{planners=s.val()||{};});
@@ -1671,8 +1703,9 @@ function renderSidebar(){
   let html='';
   Object.entries(groups).sort(([a],[b])=>a.localeCompare(b,'ko')).forEach(([cls,list])=>{
     html+=`<div class="sb-class-head">
-      <span class="sb-class-name" onclick="renameClass('${cls}')" title="반 이름 수정" style="cursor:pointer;flex:1">${cls} ✎</span>
+      <span class="sb-class-name" onclick="renameClass('${cls}')" title="반 이름 수정" style="cursor:pointer;flex:1">${cls} ✎<span class="sb-class-days${classDays[cls]?'':' none'}">${classDays[cls]?daysLabel(classDays[cls]):'요일 미설정'}</span></span>
       <div style="display:flex;gap:3px">
+        <button class="sb-class-hw" title="수업 요일 (지난 숙제 자동 입력 기준)" onclick="openClassDays('${cls}')">요일</button>
         <button class="sb-class-hw" title="학생 추가" onclick="openSMWithClass('${cls}')">＋</button>
         <button class="sb-class-hw" title="반 일괄 숙제" onclick="openBM('${cls}')">✎</button>
       </div>
@@ -3107,7 +3140,30 @@ function setEval(v){
     else btn.className='star-btn'+(v===x?' sel':'');
   });
 }
-function getPrevSessionDate(dateStr){
+// ── 반별 수업 요일 ──
+// smClassDays/{키} = {cls:'고2 A반', days:'135'}  (0=일 … 6=토). 반 이름에 . # $ [ ] / 가 있어도 되도록 키는 인코딩
+var classDays={};
+const DAY_KO=['일','월','화','수','목','금','토'];
+function clsKey(c){ return encodeURIComponent(c).replace(/\./g,'%2E'); }
+function daysLabel(d){ return [1,2,3,4,5,6,0].filter(x=>String(d).indexOf(String(x))>=0).map(x=>DAY_KO[x]).join(''); }
+function stuCls(stuId){ return ((students[stuId]||{}).cls)||'미지정'; }
+// 지난 수업일: 반 요일이 설정돼 있으면 그 요일 중 바로 앞 날짜, 없으면 기존 규칙(월수금·화목토)
+// 휴강 등으로 그날 기록이 없으면 비워 둔다 (더 앞 날짜로 넘어가면 엉뚱한 숙제가 들어갈 수 있음)
+function getPrevSessionDate(dateStr, cls){
+  if(!dateStr) return null;
+  const days=cls!=null?classDays[cls]:null;
+  if(days){
+    const p=dateStr.split('-');
+    for(let back=1;back<=7;back++){
+      const d=new Date(+p[0],+p[1]-1,+p[2]-back);
+      if(days.indexOf(String(d.getDay()))>=0)
+        return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    }
+    return null;
+  }
+  return getPrevSessionDateDefault(dateStr);
+}
+function getPrevSessionDateDefault(dateStr){
   // 로컬 날짜 파싱 (타임존 버그 방지)
   const parts=dateStr.split('-');
   const y=parseInt(parts[0]),m=parseInt(parts[1])-1,d=parseInt(parts[2]);
@@ -3145,7 +3201,7 @@ function openRM(sid=null,dateStr=null){
     document.getElementById('rmNote').value=r.note||'';
     // prevHw 자동채움: 기존 값 없을 때만
     if(!r.prevHw){
-      const prevDateE = getPrevSessionDate(r.date||'');
+      const prevDateE = getPrevSessionDate(r.date||'', stuCls(uid_));
       if(prevDateE){
         const prevRecE = Object.values(sessions[uid_]||{}).find(rv=>rv.date===prevDateE&&rv.hwC);
         if(prevRecE) document.getElementById('rmPrevHw').value = prevRecE.hwC;
@@ -3161,7 +3217,7 @@ function openRM(sid=null,dateStr=null){
     document.getElementById('rmLate').checked=false;
     setEval(-1); // 기본값 없음
     // 자동 채우기: 새 기록이므로 항상 auto-fill
-    const prevDate = getPrevSessionDate(targetDate);
+    const prevDate = getPrevSessionDate(targetDate, stuCls(uid_));
     if(prevDate){
       const prevRec = Object.values(sessions[uid_]||{}).find(rv=>rv.date===prevDate&&rv.hwC);
       if(prevRec) document.getElementById('rmPrevHw').value = prevRec.hwC;
@@ -3336,6 +3392,51 @@ function closeLightbox(){
   document.body.style.overflow='';
 }
 
+// ── Class days modal ──
+var _cdmCls=null, _cdmSel='';
+function openClassDays(cls){
+  _cdmCls=cls; _cdmSel=classDays[cls]||'';
+  document.getElementById('cdmTitle').textContent=cls+' · 수업 요일';
+  renderClassDays();
+  document.getElementById('cdm').classList.add('open');
+}
+function closeClassDays(){ document.getElementById('cdm').classList.remove('open'); }
+function toggleClassDay(x){
+  x=String(x);
+  _cdmSel=_cdmSel.indexOf(x)>=0?_cdmSel.replace(x,''):_cdmSel+x;
+  _cdmSel=_cdmSel.split('').sort().join('');
+  renderClassDays();
+}
+function renderClassDays(){
+  document.getElementById('cdmDays').innerHTML=[1,2,3,4,5,6,0].map(x=>
+    `<button type="button" class="cd-day${_cdmSel.indexOf(String(x))>=0?' on':''}${x===0?' sun':''}" onclick="toggleClassDay(${x})">${DAY_KO[x]}</button>`).join('');
+  const h=document.getElementById('cdmHint');
+  if(!_cdmSel){ h.innerHTML='요일을 고르지 않으면 기존 규칙(<b>월수금 · 화목토</b>, 일요일 제외)으로 지난 숙제를 채웁니다.'; return; }
+  // 예시: 이번 주 각 수업일의 '지난 수업일'
+  const now=new Date(), mon=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7));
+  const ex=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i);
+    if(_cdmSel.indexOf(String(d.getDay()))<0) continue;
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const save=classDays[_cdmCls]; classDays[_cdmCls]=_cdmSel;
+    const pv=getPrevSessionDate(ds,_cdmCls); classDays[_cdmCls]=save;
+    const pp=pv.split('-'), pd=new Date(+pp[0],+pp[1]-1,+pp[2]);
+    ex.push(`${DAY_KO[d.getDay()]} ← ${DAY_KO[pd.getDay()]}`);
+  }
+  h.innerHTML=`<b>${daysLabel(_cdmSel)}</b> 수업 · 지난 숙제는 바로 앞 수업일의 숙제로 채웁니다<br>${ex.join(' · ')}<br>휴강으로 앞 수업일 기록이 없으면 비워 둡니다.`;
+}
+async function saveClassDays(){
+  if(!_cdmCls) return;
+  try{
+    if(_cdmSel) await db.ref('smClassDays/'+clsKey(_cdmCls)).set({cls:_cdmCls,days:_cdmSel,upd:Date.now()});
+    else await db.ref('smClassDays/'+clsKey(_cdmCls)).remove();
+    toast(_cdmCls+' · '+(_cdmSel?daysLabel(_cdmSel)+' 수업으로 저장':'요일 설정을 지웠습니다'));
+    closeClassDays();
+  }catch(e){ toast('저장 실패: '+e.message); }
+}
+function clearClassDays(){ _cdmSel=''; renderClassDays(); }
+
 // ── Class management ──
 async function renameClass(oldName){
   const newName = prompt(`"${oldName}" 반 이름을 변경합니다:`, oldName);
@@ -3345,6 +3446,13 @@ async function renameClass(oldName){
   const targets = Object.entries(students).filter(([,s])=>(s.cls||'미지정')===oldName);
   if(!targets.length){toast('해당 반에 학생이 없습니다');return;}
   await Promise.all(targets.map(([id])=>db.ref('smStudents/'+id+'/cls').set(trimmed)));
+  // 수업 요일 설정도 새 이름으로 옮긴다 (새 이름에 이미 설정이 있으면 그대로 둔다)
+  if(classDays[oldName] && !classDays[trimmed]){
+    try{
+      await db.ref('smClassDays/'+clsKey(trimmed)).set({cls:trimmed,days:classDays[oldName],upd:Date.now()});
+      await db.ref('smClassDays/'+clsKey(oldName)).remove();
+    }catch(e){}
+  }
   toast(`"${oldName}" → "${trimmed}" 반 이름 변경 완료`);
 }
 
@@ -3460,7 +3568,7 @@ async function cleanWrongPrevHw(){
       if(!r.date||!r.prevHw) continue;
       checked++;
       // 이 세션의 정확한 이전 수업 날 계산
-      const prevDate = getPrevSessionDate(r.date);
+      const prevDate = getPrevSessionDate(r.date, stuCls(stuId));
       if(!prevDate){
         // 일요일 등 규칙 없는 날 - prevHw 삭제
         await db.ref('smSessions/'+stuId+'/'+sid+'/prevHw').remove();
