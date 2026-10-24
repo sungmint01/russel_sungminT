@@ -20,28 +20,32 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
-<style>:root{
+<style>
+/* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
+@font-face{font-family:'GmarketSans';font-weight:100 500;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
+@font-face{font-family:'GmarketSans';font-weight:600 900;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
+:root{
   --p1:#8B7FD9;--p2:#A89BEB;--p3:#C7BEF3;--p4:#B8AEF0;
   --warm:#E8795A;--cool:#56A08A;--gold:#D4A84B;
   --shadow:rgba(120,100,200,.10);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background:#FBFAFF;background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,transparent 42%),radial-gradient(circle at 88% 92%,rgba(139,127,217,.10) 0%,transparent 45%);color:#3D3860;min-height:100vh;-webkit-font-smoothing:antialiased}
+body{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:#FBFAFF;background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,transparent 42%),radial-gradient(circle at 88% 92%,rgba(139,127,217,.10) 0%,transparent 45%);color:#3D3860;min-height:100vh;-webkit-font-smoothing:antialiased}
 :root{--bl:#A89BEB;--bld:#A89BEB;--pu:#A89BEB;--pud:#8B7FD9}
 
 /* Login */
 #loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(150deg,#8B7FD9 0%,#A89BEB 45%,#D4A5C8 100%)}
 .lbox{background:#fff;border-radius:28px;padding:44px 36px;width:320px;box-shadow:0 20px 50px rgba(120,105,205,.28),0 6px 16px rgba(120,105,205,.14);text-align:center}
 .lbox .ico{color:#fff;font-weight:800;width:60px;height:60px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);border-radius:19px;display:flex;align-items:center;justify-content:center;font-size:27px;margin:0 auto 18px;box-shadow:0 8px 20px rgba(139,127,217,.35)}
-.lbox h1{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:22px;margin-bottom:4px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.lbox .sub{font-family:'Noto Sans KR','MaruBuri',sans-serif;font-size:10px;color:#AAA5C8;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
+.lbox h1{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:22px;margin-bottom:4px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lbox .sub{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:10px;color:#AAA5C8;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
 .inp{width:100%;border:1.5px solid #EAE6F5;border-radius:14px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;transition:.25s;margin-bottom:12px;background:#FBFAFF}
 .inp:focus{border-color:var(--pu);box-shadow:0 0 0 3px rgba(167,139,250,.15)}
 .btn-pri{width:100%;background:linear-gradient(135deg,#8B7FD9,#A89BEB);color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;box-shadow:0 6px 16px rgba(139,127,217,.3)}
 .btn-pri:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(139,127,217,.4)}
-.errmsg{color:#ef4444;font-size:12px;margin-top:8px;min-height:16px}
-.back-link{display:block;margin-top:16px;font-size:12px;color:#AAA5C8;text-decoration:none;font-family:'Noto Sans KR','MaruBuri',sans-serif}
+.errmsg{color:#C85F8A;font-size:12px;margin-top:8px;min-height:16px}
+.back-link{display:block;margin-top:16px;font-size:12px;color:#AAA5C8;text-decoration:none;font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif}
 .back-link:hover{color:#7070A8}
 
 /* App */
@@ -62,7 +66,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
   font-size:9.5px;font-weight:700;color:rgba(255,255,255,.82);letter-spacing:1.6px;margin-bottom:15px}
 .hdr-badge:before{content:'';width:5px;height:5px;border-radius:50%;background:#9DD9C4;
   box-shadow:0 0 0 3px rgba(157,217,196,.28)}
-.hdr-name{font-family:'MaruBuri','Pretendard',sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
+.hdr-name{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
   letter-spacing:-.5px;text-shadow:0 2px 12px rgba(40,30,90,.22)}
 .hdr-sub{font-size:12.5px;color:rgba(255,255,255,.68);letter-spacing:-.1px}
 .hdr-prog{display:flex;gap:6px;margin-top:16px}
@@ -100,18 +104,18 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 
 /* Homework card (1 week) */
 .hw-card{background:#fff;border-radius:22px;box-shadow:0 12px 32px rgba(120,105,205,.14),0 2px 6px rgba(120,105,205,.06);padding:22px;margin-top:-30px;position:relative;z-index:1;margin-bottom:16px;border-top:4px solid var(--pu)}
-.hw-label{font-family:'Noto Sans KR','MaruBuri',sans-serif;font-size:9px;color:#AAA5C8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.hw-label{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:9px;color:#AAA5C8;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
 .hw-item{background:#FBFAFF;border-radius:12px;padding:14px 16px;margin-bottom:10px;border-left:4px solid var(--pu)}
 .hw-item-date{font-size:11px;color:#8B7FD9;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.hw-item-today{background:#7c3aed;color:#fff;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700}
-.hw-item-content{font-size:14px;color:#374151;line-height:1.7;font-weight:500}
-.hw-title{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:18px;margin-bottom:14px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hw-item-today{background:#8B7FD9;color:#fff;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700}
+.hw-item-content{font-size:14px;color:#3D3860;line-height:1.7;font-weight:500}
+.hw-title{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:18px;margin-bottom:14px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hw-date{font-size:12px;color:#AAA5C8;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.hw-content{background:#FBFAFF;border-radius:10px;padding:14px 16px;font-size:14px;color:#374151;line-height:1.7;font-weight:500}
+.hw-content{background:#FBFAFF;border-radius:10px;padding:14px 16px;font-size:14px;color:#3D3860;line-height:1.7;font-weight:500}
 .hw-empty{font-size:13px;color:#AAA5C8;text-align:center;padding:20px 0;font-style:italic}
 .hw-nav{display:flex;gap:8px;margin-top:12px}
-.hw-nav-btn{background:#f1f5f9;border:none;border-radius:8px;padding:6px 12px;font-size:12px;color:#475569;cursor:pointer;font-family:inherit;transition:.15s}
-.hw-nav-btn:hover{background:#e2e8f0}
+.hw-nav-btn{background:#F2EFFC;border:none;border-radius:8px;padding:6px 12px;font-size:12px;color:#5C5680;cursor:pointer;font-family:inherit;transition:.15s}
+.hw-nav-btn:hover{background:#EAE6F5}
 .hw-nav-btn.active{background:var(--pu);color:#fff}
 
 /* Planner upload */
@@ -175,7 +179,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
   width:64px;box-sizing:border-box;text-align:center;white-space:nowrap}   /* 칩 너비 통일 (가장 긴 '숙제 피드백' 기준) */
 .hw-row-v{flex:1;font-size:13px;color:#5C5680;line-height:1.7;font-weight:500;word-break:break-word}
 .hw-row-k.fb{color:#3F8A72;background:rgba(127,199,172,.16)}
-.pdm-jump{width:100%;margin-top:10px;border:1px solid rgba(139,127,217,.25);background:#fff;color:#8B7FD9;
+.pdm-jump{width:calc(100% - 36px);margin:6px 18px 0;border:1px solid rgba(139,127,217,.25);background:#fff;color:#8B7FD9;
   border-radius:12px;padding:11px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
 /* 다른 날짜 보는 중 */
 .tl-wrap.off-today .tl-dayname{background:rgba(240,166,196,.16);color:#B4527C}
@@ -197,7 +201,7 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
   box-shadow:0 2px 8px rgba(120,105,205,.10);transition:.25s}
 .redo-btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(120,105,205,.16);border-color:#A89BEB}
 /* 오늘이 아닌 날짜 = 경고 상태 */
-.pc-title{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:16px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pc-title{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:16px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .upload-btn{width:100%;margin:0 0 6px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);color:#fff;border:none;border-radius:16px;padding:15px;letter-spacing:-.2px;box-shadow:0 6px 18px rgba(139,127,217,.28),inset 0 1px 0 rgba(255,255,255,.28);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .upload-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 26px rgba(139,127,217,.34),inset 0 1px 0 rgba(255,255,255,.28)}
 .upload-btn:active:not(:disabled){transform:translateY(0)}
@@ -207,17 +211,17 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .prog-bar{height:5px;background:#EDEAF9;border-radius:99px;margin:0 20px 12px;overflow:hidden;display:none}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--pu),var(--pud));border-radius:99px;transition:width .3s}
 .upload-msg{font-size:12px;text-align:center;margin:0 20px 8px;min-height:16px}
-.upload-msg.ok{color:#15803d}
-.upload-msg.err{color:#ef4444}
+.upload-msg.ok{color:#3F8A72}
+.upload-msg.err{color:#C85F8A}
 
 /* Planner history */
 .plan-list{padding:0 20px 20px}
-.plan-item{background:#f8fafc;border-radius:12px;margin-bottom:12px;overflow:hidden;border:1px solid rgba(120,100,200,.10)}
+.plan-item{background:#F7F5FE;border-radius:12px;margin-bottom:12px;overflow:hidden;border:1px solid rgba(120,100,200,.10)}
 .plan-item-head{padding:12px 14px 8px;display:flex;align-items:center;justify-content:space-between}
-.plan-date{font-size:13px;font-weight:600;color:#374151}
+.plan-date{font-size:13px;font-weight:600;color:#3D3860}
 .plan-img{width:100%;max-height:280px;object-fit:cover;cursor:pointer}
-.plan-comment{background:#f0fdf4;border-top:1px solid #dcfce7;padding:10px 14px;font-size:13px;color:#166534;line-height:1.6}
-.plan-comment-head{font-size:11px;font-weight:700;color:#15803d;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.plan-comment{background:#EDF9F4;border-top:1px solid #E2F4EC;padding:10px 14px;font-size:13px;color:#357A63;line-height:1.6}
+.plan-comment-head{font-size:11px;font-weight:700;color:#3F8A72;margin-bottom:3px;display:flex;align-items:center;gap:4px}
 .plan-no-comment{padding:10px 14px;font-size:12px;color:#AAA5C8;font-style:italic}
 
 /* Image lightbox */
@@ -227,50 +231,62 @@ body{font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background
 .lightbox-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 .empty-plan{text-align:center;padding:28px;color:#AAA5C8;font-size:13px}
-/* Planner calendar */
-.plan-cal-wrap{padding:12px 14px 16px}
+/* Planner calendar — 종이 괘선 카드 */
+.planner-card{position:relative;overflow:hidden;background:#fff;border-radius:22px;margin:4px 0 16px;
+  box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 26px -10px rgba(120,105,205,.24)}
+.planner-card:before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,transparent 0 25px,rgba(107,95,184,.04) 25px 26px)}
+.planner-card:after{content:'';position:absolute;top:0;bottom:0;left:13px;width:1px;background:rgba(240,166,196,.26);pointer-events:none}
+.planner-card>*{position:relative}
+.planner-card .pc-head{padding:18px 20px 0}
+.plan-cal-wrap{padding:10px 14px 16px}
 .plan-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.plan-cal-month{font-size:13px;font-weight:700}
-.plan-cal-btn{background:#f1f5f9;border:none;border-radius:7px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:#475569}
-.plan-cal-btn:hover{background:#e2e8f0}
-.plan-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.plan-cal-dow{text-align:center;font-size:10px;font-weight:600;color:#AAA5C8;padding:2px 0}
-.plan-cal-dow:first-child{color:#ef4444}.plan-cal-dow:last-child{color:#3b82f6}
-.plan-cal-day{min-height:44px;border-radius:8px;padding:3px 4px;display:flex;flex-direction:column;cursor:pointer;border:1.5px solid transparent;background:#fafbfc;transition:.12s}
-.plan-cal-day:hover{background:#f0f4f8;border-color:#e2e8f0}
-.plan-cal-day.today{border-color:#a78bfa;background:#faf5ff}
+.plan-cal-month{font-size:14px;font-weight:800;color:#3D3860;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.plan-cal-btn{background:rgba(139,127,217,.08);border:none;border-radius:11px;width:31px;height:31px;cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;color:#8B7FD9;font-family:inherit;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.plan-cal-btn:hover{background:rgba(139,127,217,.17);transform:translateY(-1px)}
+.plan-cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.plan-cal-dow{text-align:center;font-size:9.5px;font-weight:700;color:#C4C0DA;padding:2px 0 6px;letter-spacing:.6px}
+.plan-cal-dow:first-child{color:#DE8FAC}.plan-cal-dow:last-child{color:#9B93D8}
+.plan-cal-day{min-height:48px;border-radius:13px;padding:5px 5px 6px;display:flex;flex-direction:column;cursor:pointer;
+  border:1.5px solid transparent;background:transparent;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.plan-cal-day:hover{background:#F7F5FE}
+.plan-cal-day:active{transform:scale(.95)}
+.plan-cal-day.today{border-color:#A89BEB}
 .plan-cal-day.other-month{background:transparent;cursor:default}
 .plan-cal-day.other-month:hover{background:transparent;border-color:transparent}
-.plan-cal-day-num{font-size:11px;font-weight:600;color:#374151}
-.plan-cal-day.today .plan-cal-day-num{color:#8B7FD9}
-.plan-cal-day.other-month .plan-cal-day-num{color:#dde3ed}
-.plan-cal-day.sun .plan-cal-day-num{color:#ef4444}
-.plan-cal-day.sat .plan-cal-day-num{color:#3b82f6}
-.plan-cal-day.other-month .plan-cal-day-num{color:#dde3ed !important}
-.plan-cal-dots{display:flex;gap:2px;margin-top:2px;flex-wrap:wrap}
-.plan-cal-dot{width:7px;height:7px;border-radius:50%}
-.dot-plan-type{background:#60a5fa}
-.dot-done-type{background:#56A08A}
-/* Planner detail modal */
-.plan-detail-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
+.plan-cal-day.other-month:active{transform:none}
+.plan-cal-day-num{font-size:11px;font-weight:700;color:#7B76A8;line-height:1;font-variant-numeric:tabular-nums}
+.plan-cal-day.today .plan-cal-day-num{color:#5B4FA8}
+.plan-cal-day.sun .plan-cal-day-num{color:#DE8FAC}
+.plan-cal-day.sat .plan-cal-day-num{color:#9B93D8}
+.plan-cal-day.other-month .plan-cal-day-num{color:#E4E1F0 !important}
+.plan-cal-dots{display:flex;gap:3px;margin-top:auto;padding-top:4px;flex-wrap:wrap}
+.plan-cal-dot{width:6px;height:6px;border-radius:50%}
+.dot-plan-type{background:#A89BEB}
+.dot-done-type{background:#7FC7AC}
+.dot-od4p{background:#F2B36D}
+/* Planner detail modal (바텀시트 느낌) */
+.plan-detail-ov{position:fixed;inset:0;background:rgba(45,38,80,.5);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:14px}
 .plan-detail-ov.open{display:flex}
-.plan-detail-modal{background:#fff;border-radius:18px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:popIn .2s ease}
-@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-.pdm-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;border-bottom:1px solid #f1f5f9}
-.pdm-date{font-size:14px;font-weight:700}
-.pdm-close{background:none;border:none;font-size:20px;cursor:pointer;color:#AAA5C8}
-.pdm-body{padding:14px 18px 20px}
-.pdm-item{background:#f8fafc;border-radius:12px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(120,100,200,.10)}
-.pdm-item-head{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;background:#f1f5f9}
-.pdm-img{width:100%;max-height:260px;object-fit:cover;cursor:pointer}
-.pdm-comment{padding:10px 12px;font-size:13px;color:#166534;background:#f0fdf4;line-height:1.6;white-space:pre-wrap}
-.pdm-comment-head{font-size:10px;font-weight:700;color:#15803d;margin-bottom:3px}
-.pdm-no-comment{padding:8px 12px;font-size:12px;color:#AAA5C8;font-style:italic}
+.plan-detail-modal{background:#fff;border-radius:24px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto;padding-bottom:14px;
+  box-shadow:0 24px 60px -12px rgba(45,38,80,.45);animation:popIn .3s cubic-bezier(.34,1.4,.64,1)}
+@keyframes popIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.pdm-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;border-bottom:1px dashed rgba(139,127,217,.2)}
+.pdm-date{font-size:15px;font-weight:800;color:#3D3860;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.pdm-close{background:rgba(139,127,217,.08);border:none;width:30px;height:30px;border-radius:10px;font-size:14px;cursor:pointer;color:#8B7FD9}
+.pdm-body{padding:14px 18px 6px}
+.pdm-item{background:#FBFAFF;border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(139,127,217,.12)}
+.pdm-item-head{padding:9px 12px;display:flex;align-items:center;justify-content:space-between}
+.pdm-img{width:100%;max-height:260px;object-fit:cover;cursor:zoom-in;display:block}
+.pdm-comment{padding:11px 13px;font-size:13px;color:#2F6B58;background:linear-gradient(160deg,#EDF9F4,#DFF2EA);line-height:1.65;white-space:pre-wrap}
+.pdm-comment-head{font-size:10px;font-weight:800;letter-spacing:.3px;color:#3F8A72;margin-bottom:3px}
+.pdm-no-comment{padding:9px 13px;font-size:12px;color:#AAA5C8}
 .pdm-empty{text-align:center;padding:28px;color:#AAA5C8;font-size:13px}
-.plan-type-badge{display:inline-flex;align-items:center;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:600}
-.badge-plan{background:#eff6ff;color:#2563eb}
-.badge-done{background:#f0fdf4;color:#15803d}
-.section-title{font-family:'MaruBuri','Noto Sans KR',sans-serif;font-size:15px;margin-bottom:10px;color:#374151}
+.plan-type-badge{display:inline-flex;align-items:center;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700}
+.badge-plan{background:#F2EFFC;color:#5B4FA8}
+.badge-done{background:#E2F4EC;color:#3F8A72}
+.section-title{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:15px;margin-bottom:10px;color:#3D3860}
 
 /* ── 클리닉 신청 ── */
 .cb-card{position:relative;overflow:hidden;background:#fff;border-radius:22px;padding:18px 18px 12px;margin:18px 0 16px;
@@ -1269,19 +1285,19 @@ function renderPlanCal() {
       var hasDone = plans.some(function(p){ return p.type === 'done'; });
       if (hasPlan) dotsHtml += '<div class="plan-cal-dot dot-plan-type"></div>';
       if (hasDone) dotsHtml += '<div class="plan-cal-dot dot-done-type"></div>';
-      cell.style.background = '#faf5ff';
-      cell.style.borderColor = '#e9d5ff';
+      cell.style.background = '#F5F2FE';
+      cell.style.borderColor = 'rgba(139,127,217,.18)';
     }
     var od4pEntries = od4pData[ds] || [];
     if (od4pEntries.length) {
       dotsHtml += '<div class="plan-cal-dot dot-od4p"></div>';
-      if (!plans.length) { cell.style.background = '#fffbeb'; cell.style.borderColor = '#fde68a'; }
+      if (!plans.length) { cell.style.background = '#FEF5EA'; cell.style.borderColor = '#F7D9B5'; }
       // 점수 요약
       var totalScore = od4pEntries.reduce(function(a,e){return a+e.score;},0);
       var totalProbs = od4pEntries.reduce(function(a,e){return a+e.total;},0);
       if (totalProbs > 0) {
         var scoreEl = document.createElement('div');
-        scoreEl.style.cssText='font-size:9px;color:#92400e;font-weight:700;line-height:1.2';
+        scoreEl.style.cssText='font-size:9px;color:#B9772F;font-weight:700;line-height:1.2';
         scoreEl.textContent = totalScore+'/'+totalProbs;
         cell.appendChild(scoreEl);
       }
@@ -1318,18 +1334,18 @@ function openPlanDetail(ds, plans) {
   var od4pDay = od4pData[ds] || [];
   if (od4pDay.length) {
     od4pDay.forEach(function(e){
-      var scoreColor = e.total > 0 ? (e.score/e.total >= 0.8 ? '#166534' : e.score/e.total >= 0.5 ? '#92400e' : '#b91c1c') : '#374151';
-      html += '<div style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:10px">';
-      html += '<div style="font-weight:700;color:#92400e;margin-bottom:6px;font-size:13px">OD4P — ' + (e.subject||'') + '</div>';
+      var scoreColor = e.total > 0 ? (e.score/e.total >= 0.8 ? '#357A63' : e.score/e.total >= 0.5 ? '#B9772F' : '#B4527C') : '#3D3860';
+      html += '<div style="background:#FEF5EA;border-left:3px solid #F2B36D;border-radius:0 10px 10px 0;padding:12px 14px;margin-bottom:10px">';
+      html += '<div style="font-weight:700;color:#B9772F;margin-bottom:6px;font-size:13px">OD4P — ' + (e.subject||'') + '</div>';
       if (e.total > 0) {
         html += '<div style="font-size:22px;font-weight:800;color:' + scoreColor + ';margin-bottom:4px">' + e.score + ' / ' + e.total + '점</div>';
         if (e.wrongNums && e.wrongNums.length > 0) {
-          html += '<div style="font-size:11px;color:#ef4444;margin-top:2px">오답: ' + e.wrongNums.join('번, ') + '번</div>';
+          html += '<div style="font-size:11px;color:#C85F8A;margin-top:2px">오답: ' + e.wrongNums.join('번, ') + '번</div>';
         } else {
-          html += '<div style="font-size:11px;color:#166534;margin-top:2px">모두 정답!</div>';
+          html += '<div style="font-size:11px;color:#357A63;margin-top:2px">모두 정답!</div>';
         }
       } else {
-        html += '<div style="font-size:12px;color:#92400e">' + Object.keys(e.answers).length + '문제 응시</div>';
+        html += '<div style="font-size:12px;color:#B9772F">' + Object.keys(e.answers).length + '문제 응시</div>';
       }
       html += '</div>';
     });
@@ -1348,7 +1364,7 @@ function openPlanDetail(ds, plans) {
     if(thumbSrc){
       html += '<img class="pdm-img" src="' + thumbSrc + '" loading="lazy">';
     } else if(pid_){
-      html += '<div class="pdm-img" id="pdmimg_' + pid_ + '" style="height:120px;background:#f1f5f9;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#94a3b8">로딩 중...</div>';
+      html += '<div class="pdm-img" id="pdmimg_' + pid_ + '" style="height:120px;background:#F2EFFC;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:#AAA5C8">로딩 중...</div>';
     }
     html += commentHtml + '</div>';
   });

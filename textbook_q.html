@@ -18,6 +18,10 @@
 <script src="config.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
+/* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
+@font-face{font-family:'GmarketSans';font-weight:100 500;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
+@font-face{font-family:'GmarketSans';font-weight:600 900;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
+
 :root{
   --bg:#FBFAFF;--surface:#fff;--fg:#1E1B3A;--fg2:#6A6688;--fg3:#A8A4C0;
   --p1:#8B7FD9;--p2:#A89BEB;--p3:#C7BEF3;
@@ -26,7 +30,7 @@
   --border:rgba(120,100,200,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,transparent 42%),radial-gradient(circle at 88% 92%,rgba(139,127,217,.10) 0%,transparent 45%);font-family:'Pretendard','Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased;
+body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,transparent 42%),radial-gradient(circle at 88% 92%,rgba(139,127,217,.10) 0%,transparent 45%);font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased;
   background-image:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(155,143,224,.12) 0%,transparent 60%),
   radial-gradient(ellipse 50% 40% at 90% 100%,rgba(86,160,138,.08) 0%,transparent 60%)}
 
@@ -37,7 +41,7 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
 .lbox-badge{display:none;font-family:inherit;font-size:10px;font-weight:600;
   letter-spacing:2.5px;text-transform:uppercase;color:var(--p1);background:rgba(157,145,238,.1);
   padding:4px 12px;border-radius:20px;margin-bottom:18px}
-.lbox h1{font-family:'MaruBuri','Pretendard',sans-serif;font-size:22px;margin-bottom:4px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lbox h1{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:22px;margin-bottom:4px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .lbox .sub{font-size:10px;color:#AAA5C8;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
 .inp{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;
   font-size:14px;font-family:inherit;color:var(--fg);background:#fff;outline:none;transition:.15s}
@@ -70,7 +74,7 @@ body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,
   font-size:9.5px;font-weight:700;color:rgba(255,255,255,.82);letter-spacing:1.6px;margin-bottom:15px}
 .hdr-badge:before{content:'';width:5px;height:5px;border-radius:50%;background:#9DD9C4;
   box-shadow:0 0 0 3px rgba(157,217,196,.28)}
-.hdr-name{font-family:'MaruBuri','Pretendard',sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
+.hdr-name{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
   letter-spacing:-.5px;text-shadow:0 2px 12px rgba(40,30,90,.22)}
 .hdr-sub{font-size:12.5px;color:rgba(255,255,255,.68);letter-spacing:-.1px}
 .logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);
