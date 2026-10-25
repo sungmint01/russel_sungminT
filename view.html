@@ -7,7 +7,6 @@
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>수업 현황 — 성민T</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
@@ -24,12 +23,11 @@
   --border:#E9E5F6;--rule:#EFECF9;--control:#D9D3F0;
   --ink:#3D3860;--muted:#5C5680;--faint:#6B6690;
   --accent:#6B5FB8;--accent-ink:#5B4FA8;--accent-soft:#A89BEB;
-  --mint:#2E735E;--mint-ink:#2A6352;--mint-fill:#7FC7AC;--mint-tint:#EAF6F1;--mint-line:#BFE3D5;
+  --mint:#2E735E;--mint-ink:#2A6352;--mint-fill:#7FC7AC;--mint-tint:#EAF6F1;
   --rose:#B0497A;--rose-fill:#DE8FAC;--rose-tint:#FCEEF4;--rose-line:#F0C6D8;
   --apricot:#9A5F1F;--apricot-fill:#F2B36D;--apricot-tint:#FDF2E6;
   --r-card:20px;--r-inner:14px;
   --spring:cubic-bezier(.34,1.56,.64,1);
-  --bl:#6B5FB8;--bld:#5B4FA8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:var(--ground);color:var(--ink);
@@ -82,6 +80,7 @@ button:focus-visible,a:focus-visible,.inp:focus-visible,.linp:focus-visible{outl
 .sc+.sc{border-left:1px solid var(--rule)}
 .sn{font-size:22px;font-weight:500;letter-spacing:-.3px;line-height:1.15;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:3px}
 .sl{font-size:12px;color:var(--faint)}
+.sn small{font-size:12px;font-weight:500;color:var(--rose);margin-left:6px;letter-spacing:0;white-space:nowrap}
 /* ── 카드 ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);margin-bottom:16px}
 .card-head{padding:20px 20px 0;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
@@ -223,20 +222,11 @@ footer{text-align:center;padding:16px 0 8px;color:var(--faint);font-size:12px}
   footer{clear:both}
 }
 </style>
-  <style>
-    @font-face {
-      font-family: 'MaruBuri';
-      src: url('./MaruBuri-Regular.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-  </style>
 </head>
 <body>
 <div id="loginPage">
   <div class="lbox">
-    <div class="lico">T</div>
+    <div class="lico">S</div>
     <div class="lbox-t" role="heading" aria-level="1">학부모 페이지</div>
     <p class="lsub">수업 기록 · 숙제 · 상담</p>
     <input class="linp" type="password" id="pwIn" placeholder="비밀번호 입력" autocomplete="off" onkeydown="if(event.key==='Enter')doParentLogin()">
@@ -247,14 +237,14 @@ footer{text-align:center;padding:16px 0 8px;color:var(--faint);font-size:12px}
 </div>
 <div id="load"><div><div class="sp"></div><p class="ld-txt">불러오는 중...</p></div></div>
 <div id="wrap">
-  <div class="app-bar"><span class="app-mark">T</span><span class="app-name">성민T<span>학부모</span></span></div>
+  <div class="app-bar"><span class="app-mark">S</span><span class="app-name">성민T<span>학부모</span></span></div>
   <div class="hdr">
     <div>
       <h1 class="hdr-name" id="hName"></h1>
       <div class="hdr-tags"><span class="htag" id="hGrade"></span><span class="htag" id="hSubj"></span></div>
     </div>
     <div class="stats">
-      <div class="sc"><div class="sn" id="sTot">0</div><div class="sl">총 수업 횟수</div></div>
+      <div class="sc"><div class="sn" id="sTot">0</div><div class="sl" id="sTotLb">수업 횟수</div></div>
       <div class="sc"><div class="sn" id="sAvg">-</div><div class="sl">평균 등급</div></div>
       <div class="sc"><div class="sn" id="sLast">-</div><div class="sl">최근 등급</div></div>
     </div>
@@ -470,9 +460,13 @@ function renderStats(){
     if(!r.date||!r.date.startsWith(monthStr)) return false;
     return r.eval!=null||r.prog||r.hwC||r.cli||r.comment||r.special||r.absent||r.late||r.prevHw||r.note;
   });
-  // 총 수업 횟수: 해당 월 기록 중 가장 큰 회차
-  const maxNum=monthRecs.length?Math.max(...monthRecs.map(r=>r.num||0)):0;
-  document.getElementById('sTot').textContent=maxNum||'-';
+  // 수업 횟수: 달력과 같은 기준(날짜별 대표 기록)으로 그 달 수업한 날을 센다.
+  // 예전엔 회차(num) 최댓값을 썼는데, 회차가 달을 넘어 이어지면 그 달 수업보다 크게 나왔다
+  const recMap=buildRecMap();
+  const dayList=Object.keys(recMap).filter(d=>d.startsWith(monthStr));
+  const absN=dayList.filter(d=>recMap[d].absent).length;
+  document.getElementById('sTot').innerHTML=dayList.length?dayList.length+'회'+(absN?'<small>결석 '+absN+'</small>':''):'-';
+  document.getElementById('sTotLb').textContent=(calMonth+1)+'월 수업';
   // 평균/최근 등급: 해당 월 중 eval 있는 것
   const arr=monthRecs.filter(r=>r.eval!=null&&r.eval>=0);
   if(arr.length){
@@ -698,14 +692,6 @@ function renderSent(){
     </div>`).join('');
 }
 </script>
-
-
-
-
-
-
-
-
 
 <script>
 (function(){

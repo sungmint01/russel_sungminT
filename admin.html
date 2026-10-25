@@ -7,7 +7,6 @@
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>관리자 — 성민T</title>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Gothic+A1:wght@300;400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
@@ -19,7 +18,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:#FBFAFF;color:#3D3860;-webkit-font-smoothing:antialiased}
-:root{--bl:#8B7FD9;--bld:#6B5FB8;--ro:#F0A6C4;
+:root{--bl:#8B7FD9;--bld:#6B5FB8;
   --sh-card:0 1px 2px rgba(120,105,205,.06),0 10px 26px -12px rgba(120,105,205,.22);
   --spring:cubic-bezier(.34,1.56,.64,1)}
 /* Login */
@@ -185,21 +184,6 @@ textarea.inp{resize:vertical;min-height:68px}
 .star-btn:hover{border-color:#A89BEB;background:#F7F5FE}
 .star-btn.sel{border-color:transparent;background:linear-gradient(135deg,#8B7FD9,#A89BEB);color:#fff;box-shadow:0 4px 12px -4px rgba(107,95,184,.45)}
 .star-btn.sel-x{border-color:#EAE6F5;background:#F7F5FE;color:#AAA5C8}
-.pv-card{background:#fff;border-radius:20px;box-shadow:var(--sh-card);margin-bottom:14px;overflow:hidden;max-width:980px}
-.pv-stu-head{padding:13px 20px;background:linear-gradient(160deg,#F7F5FE,#F2EFFC);border-bottom:1px dashed rgba(139,127,217,.18);font-size:13.5px;font-weight:800;display:flex;align-items:center;justify-content:space-between}
-.pv-item{padding:14px 18px;border-bottom:1px solid #F7F5FE}
-.pv-item:last-child{border-bottom:none}
-.pv-date{font-size:12px;font-weight:600;color:#3D3860;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
-.pv-img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;cursor:pointer;margin-bottom:8px}
-.pv-comment{background:#EDF9F4;border-radius:8px;padding:9px 12px;font-size:13px;color:#357A63;line-height:1.6;margin-bottom:6px;white-space:pre-wrap}
-.pv-comment-head{font-size:11px;font-weight:700;color:#3F8A72;margin-bottom:3px}
-.pv-comment-form{margin-top:6px;display:none}
-.pv-comment-form.open{display:block}
-.pv-comment-form textarea{width:100%;border:1.5px solid #EAE6F5;border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;outline:none;resize:vertical;min-height:60px;transition:.2s}
-.pv-comment-form textarea:focus{border-color:var(--bl)}
-.pv-form-row{display:flex;gap:7px;margin-top:7px}
-.btn-pv-save{background:var(--bl);color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-pv-cancel{background:#F2EFFC;color:#5C5680;border:1px solid rgba(120,105,205,.12);border-radius:7px;padding:7px 10px;font-size:12px;cursor:pointer;font-family:inherit}
 .lightbox{position:fixed;inset:0;background:rgba(30,26,56,.88);z-index:400;display:none;align-items:center;justify-content:center;padding:16px}
 .lightbox.open{display:flex}
 .lightbox img{max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain}
@@ -234,34 +218,7 @@ textarea.inp{resize:vertical;min-height:68px}
 .planner-preview-img{width:100%;border-radius:12px;display:block;cursor:zoom-in;box-shadow:0 4px 16px rgba(120,100,200,.12);transition:.2s}
 .planner-preview-img:hover{transform:scale(1.01)}
 .pp-comment-box{background:#fff;border-radius:14px;padding:14px 16px;margin-top:8px;box-shadow:0 2px 8px rgba(120,100,200,.07)}
-.pp-comment-label{font-size:10.5px;font-weight:800;color:#3F8A72;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.pp-existing-comment{font-size:13px;color:#3D3860;line-height:1.7;padding:10px 12px;background:#F7F5FE;border-radius:8px;margin-bottom:10px}
-.pp-comment-ta{width:100%;border:1.5px solid #EAE6F5;border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;resize:vertical;min-height:70px;outline:none;transition:.2s;color:#3D3860;background:#fff}
-.pp-comment-ta:focus{border-color:#A89BEB;box-shadow:0 0 0 3px rgba(139,127,217,.14)}
-.pp-save-btn{margin-top:8px;background:linear-gradient(135deg,#A89BEB,#8B7FD9);color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;float:right;transition:.2s}
-.pp-save-btn:hover{opacity:.9}
-.pp-no-img{text-align:center;padding:30px;color:#AAA5C8;font-size:13px}
 /* OD4P status */
-.od-date-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.od-date-label{font-size:13px;font-weight:700;color:#3D3860}
-.od-subj-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.od-subj-tab{background:#fff;border:1.5px solid rgba(139,127,217,.2);border-radius:99px;padding:6px 15px;font-size:12px;font-weight:700;cursor:pointer;color:#7B76A8;transition:.2s;font-family:inherit}
-.od-subj-tab:hover{border-color:#A89BEB;background:#F7F5FE}
-.od-subj-tab.on{background:linear-gradient(135deg,#8B7FD9,#A89BEB);border-color:transparent;color:#fff}
-.od-summary{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.od-stat{background:#F7F5FE;border-radius:8px;padding:7px 14px;font-size:12px;color:#3D3860;border:1px solid rgba(120,105,205,.12)}
-.od-stat strong{color:#8B7FD9}
-.od-table{width:100%;border-collapse:collapse;font-size:12px}
-.od-table th{background:#F4F1FC;padding:11px 14px;text-align:left;font-weight:700;color:#6B5FB8;font-size:11px;letter-spacing:.02em;border-bottom:none;font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif}
-.od-table thead th:first-child{border-radius:12px 0 0 12px}.od-table thead th:last-child{border-radius:0 12px 12px 0}
-.od-table td{padding:12px 14px;border-bottom:1px solid #F2EFFA;vertical-align:middle;color:#3D3860}
-.od-table tbody tr{transition:background .15s}.od-table tbody tr:hover{background:#FBFAFF}
-.od-table tr:last-child td{border-bottom:none}
-.od-name{font-weight:600;color:#3D3860}
-.od-time{font-size:10px;color:#AAA5C8}
-.od-score{font-weight:700;color:#8B7FD9}
-.od-answers{font-size:10px;color:#7B76A8;font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif}
-.od-not{color:#AAA5C8;font-style:italic}
 .od4p-wrap{padding:16px}
 .od4p-dates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .od4p-date-btn{padding:6px 13px;border-radius:99px;border:1.5px solid rgba(139,127,217,.2);cursor:pointer;font-size:11px;font-weight:700;background:#fff;color:#7B76A8;transition:.2s;font-family:inherit}
@@ -310,10 +267,6 @@ textarea.inp{resize:vertical;min-height:68px}
 .cs-name button{border:none;background:none;color:#AAA5C8;cursor:pointer;font-size:11px;padding:0 4px;font-family:inherit}
 .cs-name button:hover{color:#C85F8A}
 .cs-none{font-size:11px;color:#AAA5C8;margin-top:5px}
-.cl-ans-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:8px}
-.cl-ans-cell{background:#F7F5FE;border-radius:6px;padding:4px 2px;text-align:center;font-size:10px}
-.cl-ans-num{color:#AAA5C8;display:block;font-size:9px}
-.cl-ans-val{color:#8B7FD9;font-weight:700;display:block}
 .cl-result-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F2EFFC}
 .cl-result-name{font-size:12px;font-weight:600;color:#3D3860}
 .cl-result-score{font-size:12px;font-weight:700;color:#8B7FD9}
@@ -348,7 +301,6 @@ textarea.inp{resize:vertical;min-height:68px}
 .cd-day.sun{color:#DE8FAC}.cd-day.sun.on{color:#fff}
 .cd-hint{font-size:11.5px;color:#7B76A8;line-height:1.6;background:#F7F5FE;border-radius:12px;padding:10px 12px}
 .cd-hint b{color:#5B4FA8}
-.si-class{color:rgba(255,255,255,.42);font-size:10px;margin-top:1px}
 /* Bulk HW modal */
 .bm-class-chip{display:inline-flex;align-items:center;border-radius:99px;padding:6px 14px;font-size:13px;font-weight:700;border:1.5px solid rgba(139,127,217,.2);background:#fff;color:#7B76A8;cursor:pointer;transition:.2s;margin:0 4px 6px 0}
 .bm-class-chip:hover{border-color:#A89BEB;background:#F7F5FE}
@@ -395,15 +347,6 @@ textarea.inp{resize:vertical;min-height:68px}
   padding:5px 11px;font-size:11.5px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:6px}
 .btn-aic:hover{background:#F7F5FE}
 </style>
-  <style>
-    @font-face {
-      font-family: 'MaruBuri';
-      src: url('./MaruBuri-Regular.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-      font-display: swap;
-    }
-  </style>
 </head>
 <body>
 <div id="loginPage">
@@ -946,7 +889,7 @@ function renderTbList(){
           <span style="font-size:13px;color:#6A6688;transition:.15s;display:inline-block;transform:rotate(${collapsed?'0':'90'}deg)">▶</span>
           <div>
             <div style="font-size:14px;font-weight:600">${tb.title}</div>
-            <div style="font-size:11px;color:#A8A4C0;font-family:'Plus Jakarta Sans',sans-serif">${pcnt}문제 · 영상 ${ytcnt}개</div>
+            <div style="font-size:11px;color:#A8A4C0">${pcnt}문제 · 영상 ${ytcnt}개</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:6px">
@@ -1168,7 +1111,6 @@ function openFreeQModal(sid,pid,stuName,bookName,page,probNum,ds,hasImg){
   }
   document.getElementById('ytModal').style.display='flex';
 }
-function closeFreeQModal(){closeYtModal();}
 function deleteFreeQAdmin(){
   var {sid,pid}=_freeQTarget;
   if(!sid||!pid) return;
@@ -1224,7 +1166,6 @@ async function toggleTbAssign(stuId,tbId,checked){
   else await db.ref('smTbAssign/'+stuId).remove();
   renderTbAssignList();
 }
-function assignTb(stuId,tbId){ toggleTbAssign(stuId,tbId,!!tbId); }
 
 function openTbCreate(){
   document.getElementById('tbEditId').value='';
@@ -1385,7 +1326,6 @@ function removeTbQuestion(tbId,probNum,stuId){
     renderTbList();
   });
 }
-function openYtModal(tbId,probNum){openProbDetail(tbId,probNum);}
 
 function closeYtModal(){document.getElementById('ytModal').style.display='none';}
 
@@ -1560,20 +1500,6 @@ async function loadPlannerImg(pid){
   }
 }
 
-function loadPvImg(el, pid){
-  if(!pid) return;
-  el.textContent='로딩 중...';
-  loadPlannerImg(pid).then(function(src){
-    if(src){
-      var img=document.createElement('img');
-      img.className='pv-img';img.src=src;
-      img.onclick=function(){openLightbox(this.src);};
-      el.replaceWith(img);
-    } else {
-      el.textContent='사진 없음';
-    }
-  });
-}
 function answersEqual(val,correct){
   var v=(val||'').trim(),cr=(correct||'').trim();
   if(!v||!cr) return false;
@@ -1750,8 +1676,6 @@ function renderSidebar(){
   el.innerHTML=html;
 }
 var _psDate = null;
-
-
 
 // ════ HW MANAGEMENT ════
 function showHwMgr(){
@@ -3384,21 +3308,6 @@ async function saveReply(sid,cid){
   await db.ref(`smConsultations/${sid}/${cid}`).update({reply,replyAt:Date.now(),isRead:true});
   toast('답변이 저장되었습니다');
 }
-
-function togglePvForm(sid,pid){
-  const f=document.getElementById(`pvf_${sid}_${pid}`);
-  if(!f)return;
-  f.classList.toggle('open');
-  if(f.classList.contains('open')){const ta=document.getElementById(`pvt_${sid}_${pid}`);if(ta)setTimeout(()=>ta.focus(),50);}
-}
-
-async function savePlannerComment(sid,pid){
-  const ta=document.getElementById(`pvt_${sid}_${pid}`);
-  if(!ta)return;
-  await db.ref(`smPlanners/${sid}/${pid}/comment`).set(ta.value.trim());
-  toast('코멘트가 저장되었습니다');
-}
-
 
 function rmImgClick(el){
   if(el.dataset.fullSrc){openLightbox(el.dataset.fullSrc);return;}

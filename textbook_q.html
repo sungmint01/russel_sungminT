@@ -12,7 +12,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교재 질문 — 성민T</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
@@ -22,203 +21,165 @@
 @font-face{font-family:'GmarketSans';font-weight:100 500;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
 @font-face{font-family:'GmarketSans';font-weight:600 900;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff')}
 
+/* ── Soft Studio · 화면 규칙 — student.html과 같은 토큰
+   라벤더 = 내 질문(체크) / 민트 = 풀이 영상 / 로즈 = 삭제 */
 :root{
-  --bg:#FBFAFF;--surface:#fff;--fg:#1E1B3A;--fg2:#6A6688;--fg3:#A8A4C0;
-  --p1:#8B7FD9;--p2:#A89BEB;--p3:#C7BEF3;
-  --warm:#E8795A;--cool:#56A08A;
-  --shadow:rgba(120,105,205,.12);
-  --border:rgba(120,100,200,.12);
+  --ground:#FBFAFF;--surface:#FFFFFF;--panel:#F4F2FC;--panel-2:#EEEBFA;
+  --border:#E9E5F6;--control:#D9D3F0;
+  --ink:#3D3860;--muted:#5C5680;--faint:#6B6690;
+  --accent:#6B5FB8;--accent-ink:#5B4FA8;
+  --mint:#2E735E;--mint-ink:#2A6352;--mint-fill:#56A08A;--mint-tint:#EAF6F1;
+  --rose:#B0497A;--rose-line:#F0C6D8;
+  --r-card:20px;--r-inner:14px;
+  --spring:cubic-bezier(.34,1.56,.64,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background-image:radial-gradient(circle at 12% 8%,rgba(240,166,196,.10) 0%,transparent 42%),radial-gradient(circle at 88% 92%,rgba(139,127,217,.10) 0%,transparent 45%);font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased;
-  background-image:radial-gradient(ellipse 60% 40% at 10% 0%,rgba(155,143,224,.12) 0%,transparent 60%),
-  radial-gradient(ellipse 50% 40% at 90% 100%,rgba(86,160,138,.08) 0%,transparent 60%)}
+body{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;background:var(--ground);color:var(--ink);
+  min-height:100vh;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
+button{font-family:inherit}
+button:focus-visible,a:focus-visible,.inp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* LOGIN */
-#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(150deg,#8B7FD9 0%,#A89BEB 45%,#D4A5C8 100%)}
-.lbox{background:#fff;border-radius:26px;padding:42px 34px;width:320px;max-width:100%;box-shadow:0 1px 2px rgba(120,105,205,.06),0 16px 40px -12px rgba(120,105,205,.32);text-align:center}
-.lbox .ico{color:#fff;font-weight:800;width:60px;height:60px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);border-radius:19px;display:flex;align-items:center;justify-content:center;font-size:27px;margin:0 auto 18px;box-shadow:0 8px 20px rgba(139,127,217,.35)}
-.lbox-badge{display:none;font-family:inherit;font-size:10px;font-weight:600;
-  letter-spacing:2.5px;text-transform:uppercase;color:var(--p1);background:rgba(157,145,238,.1);
-  padding:4px 12px;border-radius:20px;margin-bottom:18px}
-.lbox h1{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:22px;margin-bottom:4px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.lbox .sub{font-size:10px;color:#AAA5C8;letter-spacing:2px;margin-bottom:28px;text-transform:uppercase}
-.inp{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;
-  font-size:14px;font-family:inherit;color:var(--fg);background:#fff;outline:none;transition:.15s}
-.inp:focus{border-color:var(--p1);box-shadow:0 0 0 3px rgba(157,145,238,.15)}
-.btn-pri{width:100%;padding:13px;background:linear-gradient(135deg,#8B7FD9,#A89BEB);border:none;
-  border-radius:12px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
-  margin-top:12px;letter-spacing:-.2px;transition:.15s}
-.btn-pri:hover{opacity:.92}
-.errmsg{font-size:12px;color:var(--warm);margin-top:8px;min-height:18px}
-.back-link{display:block;text-align:center;font-size:13px;color:var(--fg3);margin-top:16px;
-  text-decoration:none}
-.back-link:hover{color:var(--fg2)}
+/* Login */
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px 16px;background:var(--panel)}
+.lbox{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:36px 28px 28px;width:100%;max-width:340px;text-align:center}
+.lbox .ico{width:52px;height:52px;border-radius:16px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;
+  background:var(--accent-ink);color:#fff;font-size:24px;font-weight:700}
+.lbox .lbox-t{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.4px;margin-bottom:6px}
+.lbox .sub{font-size:13px;color:var(--faint);margin-bottom:24px}
+.inp{width:100%;height:48px;border:1px solid var(--control);border-radius:var(--r-inner);padding:0 16px;font-size:15px;font-family:inherit;color:var(--ink);
+  outline:none;transition:border-color .2s;background:var(--surface)}
+.inp::placeholder{color:var(--faint)}
+.inp:focus{border-color:var(--accent)}
+.lbox .inp{margin-bottom:10px}
+.btn-pri{width:100%;height:48px;background:var(--accent-ink);color:#fff;border:none;border-radius:var(--r-inner);font-size:15px;font-weight:700;cursor:pointer;
+  transition:background .2s,transform .25s var(--spring)}
+.btn-pri:hover{background:#4E4396}
+.btn-pri:active{transform:scale(.98)}
+.errmsg{color:var(--rose);font-size:13px;margin-top:8px;min-height:18px}
+.back-link{display:inline-block;margin-top:14px;font-size:13px;color:var(--faint);text-decoration:none}
+.back-link:hover{color:var(--ink)}
 
-/* APP */
-#app{display:none;max-width:560px;margin:0 auto;padding:0 14px 88px}
+/* App */
+#app{display:none;max-width:560px;margin:0 auto;padding:0 16px 96px}
+.app-bar{display:flex;align-items:center;gap:8px;height:56px}
+.app-mark{width:28px;height:28px;border-radius:9px;background:var(--accent-ink);color:#fff;font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex:none}
+.app-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.app-name span{color:var(--faint);font-weight:500;margin-left:4px}
+.logout-btn{margin-left:auto;background:none;border:1px solid var(--control);color:var(--muted);font-size:12px;border-radius:99px;
+  height:32px;padding:0 14px;cursor:pointer;transition:border-color .2s,color .2s}
+.logout-btn:hover{border-color:var(--accent);color:var(--ink)}
+.hdr{background:var(--panel);border-radius:var(--r-card);padding:20px;margin-bottom:16px}
+.hdr-name{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.6px;line-height:1.2}
+.hdr-sub{font-size:14px;color:var(--muted);margin-top:4px}
 
-/* HEADER */
-.hdr{background:linear-gradient(168deg,#453D78 0%,#5B51A0 38%,#7A6DC9 72%,#9A8CE0 100%);
-  padding:26px 22px 30px;margin:12px 0 0;position:relative;overflow:hidden;border-radius:26px;
-  box-shadow:0 2px 6px rgba(70,60,130,.14),0 14px 34px -12px rgba(70,60,130,.40)}
-.hdr::before{content:'';position:absolute;width:260px;height:260px;
-  background:radial-gradient(circle,rgba(255,255,255,.16),transparent 68%);
-  top:-110px;right:-70px;pointer-events:none}
-.hdr::after{content:'';position:absolute;width:180px;height:180px;
-  background:radial-gradient(circle,rgba(240,166,196,.20),transparent 70%);
-  bottom:-90px;left:-50px;pointer-events:none}
-.hdr-inner{position:relative;z-index:2}
-.hdr-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.13);
-  border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:99px;padding:5px 13px;
-  font-size:9.5px;font-weight:700;color:rgba(255,255,255,.82);letter-spacing:1.6px;margin-bottom:15px}
-.hdr-badge:before{content:'';width:5px;height:5px;border-radius:50%;background:#9DD9C4;
-  box-shadow:0 0 0 3px rgba(157,217,196,.28)}
-.hdr-name{font-family:'GmarketSans','Pretendard','Noto Sans KR',-apple-system,sans-serif;font-size:27px;color:#fff;margin-bottom:5px;
-  letter-spacing:-.5px;text-shadow:0 2px 12px rgba(40,30,90,.22)}
-.hdr-sub{font-size:12.5px;color:rgba(255,255,255,.68);letter-spacing:-.1px}
-.logout-btn{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);
-  border:none;padding:6px 12px;border-radius:20px;color:#fff;font-size:12px;cursor:pointer;
-  font-family:inherit;font-weight:500;z-index:10}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:20px;margin-bottom:16px}
+.card-title{font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:12px}
+.empty-msg{text-align:center;padding:20px 0;color:var(--faint);font-size:14px;line-height:1.7}
 
-/* BODY */
-.body{padding:16px 0 0}
+/* 교재 선택 */
+.tb-item{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:56px;padding:12px 16px;margin-bottom:8px;
+  border-radius:var(--r-inner);background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:border-color .2s,transform .2s var(--spring)}
+.tb-item:hover{border-color:var(--accent)}
+.tb-item:active{transform:scale(.99)}
+.tb-name{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.tb-cnt{flex:none;font-size:13px;color:var(--faint);font-variant-numeric:tabular-nums}
 
-.card{position:relative;background:var(--surface);border-radius:22px;padding:18px 19px;margin-bottom:13px;overflow:hidden;
-  box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 28px -10px rgba(120,105,205,.22)}
-.card:before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(180deg,transparent 0 25px,rgba(107,95,184,.035) 25px 26px)}
-.card>*{position:relative}
-.card-title{font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8B7FD9;margin-bottom:12px}
+/* 문제 목록 머리 */
+.prob-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.prob-head .card-title{margin-bottom:4px}
+.tb-current{display:inline-flex;align-items:center;gap:8px;border:none;background:none;padding:0;cursor:pointer;
+  font-size:14px;font-weight:500;color:var(--muted);text-align:left}
+.tb-toggle{font-size:10px;color:var(--accent-ink);background:var(--panel-2);border-radius:99px;width:22px;height:22px;
+  display:inline-flex;align-items:center;justify-content:center;flex:none}
+.q-badge{flex:none;white-space:nowrap;font-size:12px;font-weight:700;color:var(--accent-ink);background:var(--panel-2);
+  padding:5px 12px;border-radius:99px;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.legend-item{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--faint)}
+.legend-dot{width:12px;height:12px;border-radius:4px;flex:none}
+.legend-dot.q{background:var(--accent)}
+.legend-dot.yt{background:var(--mint-fill)}
 
-/* TB SELECTOR */
-.tb-item{padding:13px 15px;border-radius:15px;background:#FBFAFE;cursor:pointer;
-  margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;
-  border:1px solid rgba(139,127,217,.10);transition:.22s cubic-bezier(.34,1.56,.64,1)}
-.tb-item:hover{border-color:rgba(139,127,217,.35);transform:translateY(-2px);box-shadow:0 6px 16px rgba(120,105,205,.13)}
-.tb-item.selected{border-color:transparent;background:linear-gradient(140deg,#F4F1FE,#E8E2FA);box-shadow:0 0 0 1.5px #A89BEB}
-.tb-name{font-size:14px;font-weight:700;color:#3D3860;letter-spacing:-.2px}
-.tb-cnt{font-size:11px;color:#AAA5C8;font-variant-numeric:tabular-nums}
-.tb-toggle{font-size:10px;color:#8B7FD9;font-weight:700;line-height:1;
-  background:rgba(139,127,217,.10);border-radius:99px;width:19px;height:19px;
-  display:inline-flex;align-items:center;justify-content:center;transition:.2s}
-.tb-toggle:hover{background:rgba(139,127,217,.2)}
+/* 내 질문 */
+.myq-card{background:var(--panel);border-radius:var(--r-inner);padding:14px;margin-bottom:16px}
+.myq-cap{font-size:13px;font-weight:700;color:var(--ink)}
+.myq-cap.wait{margin-top:14px;color:var(--muted)}
+.myq-row{display:flex;align-items:center;gap:12px;margin-top:8px;border-radius:12px;padding:10px 12px;min-height:52px;
+  background:var(--surface);cursor:pointer;transition:transform .2s var(--spring)}
+.myq-row:active{transform:scale(.99)}
+.myq-row.new{background:var(--mint-tint)}
+.myq-ico{flex:none;width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;background:var(--mint-fill);color:#fff}
+.myq-ico.q{background:var(--panel-2);color:var(--accent-ink);font-size:13px;font-weight:700}
+.myq-body{flex:1;min-width:0}
+.myq-t{font-size:14px;color:var(--ink);font-weight:500}
+.myq-row.new .myq-t{color:var(--mint-ink);font-weight:700}
+.myq-sub{font-size:12px;color:var(--faint);margin-top:2px}
+.myq-row.new .myq-sub{color:var(--mint)}
+.myq-more{width:100%;height:40px;margin-top:8px;border:none;background:none;color:var(--accent-ink);font-size:13px;font-weight:700;cursor:pointer}
+.myq-empty{font-size:13px;color:var(--faint);margin-top:8px;line-height:1.6}
+.myq-add{width:100%;height:46px;margin-top:12px;border:1px dashed var(--control);background:var(--surface);color:var(--accent-ink);
+  border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:border-color .2s}
+.myq-add:hover{border-color:var(--accent)}
 
-/* PROBLEM GRID */
-.prob-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:9px}
-.sec-box{position:relative;background:#fff;border-radius:18px;padding:14px 16px;margin-bottom:8px;overflow:hidden;
-  box-shadow:0 1px 2px rgba(120,105,205,.05),0 8px 20px -9px rgba(120,105,205,.20);
-  transition:box-shadow .25s ease}
-.sec-box:before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(180deg,transparent 0 25px,rgba(107,95,184,.035) 25px 26px)}
-.sec-box>*{position:relative}
-.sec-box.open{box-shadow:0 1px 2px rgba(120,105,205,.06),0 12px 28px -10px rgba(120,105,205,.26)}
-.sec-bar{display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:10px}
-.sec-t{font-size:13px;font-weight:700;color:#3D3860;letter-spacing:-.2px}
-.sec-s{font-size:10.5px;color:#AAA5C8;margin-top:3px}
-.sec-s b{color:#8B7FD9;font-weight:700}
-.sec-chev{font-size:13px;color:#C4C0DA;transition:transform .25s;flex-shrink:0}
-.sec-box.open .sec-chev{transform:rotate(180deg);color:#8B7FD9}
+/* 문제 칸 */
+.prob-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}
+@media(max-width:360px){.prob-grid{grid-template-columns:repeat(6,1fr)}}
+.sec-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-inner);padding:14px 16px;margin-bottom:8px}
+.sec-box.open{border-color:var(--control)}
+.sec-bar{display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:10px;min-height:36px}
+.sec-t{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.sec-s{font-size:12px;color:var(--faint);margin-top:2px}
+.sec-s b{color:var(--accent-ink);font-weight:700}
+.sec-chev{font-size:12px;color:var(--faint);transition:transform .25s;flex:none}
+.sec-box.open .sec-chev{transform:rotate(180deg);color:var(--accent-ink)}
 .sec-body{display:none}
 .sec-box.open .sec-body{display:block}
-.myq-card{position:relative;background:#fff;border-radius:20px;padding:16px 17px;margin-bottom:14px;overflow:hidden;
-  box-shadow:0 1px 2px rgba(120,105,205,.06),0 10px 26px -10px rgba(120,105,205,.24)}
-.myq-card:before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(180deg,transparent 0 25px,rgba(107,95,184,.04) 25px 26px)}
-.myq-card:after{content:'';position:absolute;top:0;bottom:0;left:13px;width:1px;background:rgba(240,166,196,.26)}
-.myq-card>*{position:relative}
-.myq-cap{font-size:10px;letter-spacing:1.4px;font-weight:700;color:#8B7FD9}
-.myq-row{display:flex;align-items:center;gap:10px;margin-top:8px;border-radius:13px;padding:10px 12px;
-  background:#F7F5FE;cursor:pointer;transition:.2s}
-.myq-row:hover{transform:translateY(-1px)}
-.myq-row.new{background:linear-gradient(140deg,#EDF9F4,#DCF0E7)}
-.myq-ico{font-size:15px;flex-shrink:0}
-.myq-t{font-size:12.5px;color:#4A4370;font-weight:600}
-.myq-row.new .myq-t{color:#2F6B57}
-.myq-sub{font-size:10.5px;color:#AAA5C8;margin-top:2px}
-.myq-row.new .myq-sub{color:#6BA894}
-.myq-more{width:100%;margin-top:9px;border:none;background:none;color:#8B7FD9;font-size:11.5px;
-  font-weight:700;font-family:inherit;cursor:pointer;padding:6px}
-.myq-empty{font-size:11.5px;color:#C4C0DA;margin-top:9px}
-.myq-add{width:100%;margin-top:11px;border:1px dashed rgba(139,127,217,.35);background:#fff;color:#8B7FD9;
-  border-radius:13px;padding:11px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s}
-.myq-add:hover{background:#F7F5FE;border-color:#A89BEB}
-@media(max-width:360px){.prob-grid{grid-template-columns:repeat(6,1fr)}}
-/* prob-cell: 기본=회색, 체크=빨강, 영상=초록, 둘다=초록테두리+빨강배경 */
-.prob-cell{position:relative;border-radius:10px;
-  background:#fff;border:1px solid rgba(139,127,217,.16);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  cursor:pointer;transition:.2s cubic-bezier(.34,1.56,.64,1);padding:7px 4px;min-width:0}
-.prob-cell:hover{border-color:rgba(139,127,217,.4);transform:translateY(-1px);box-shadow:0 4px 10px rgba(120,105,205,.13)}
-.prob-cell.checked{background:#8B7FD9;border-color:#8B7FD9;box-shadow:0 2px 8px rgba(139,127,217,.28)}
-.prob-cell.has-yt{background:#7FC7AC;border-color:#7FC7AC;box-shadow:0 2px 8px rgba(86,160,138,.26)}
-.prob-cell.checked.has-yt{background:#7FC7AC;border-color:#7FC7AC}
-.prob-num{font-family:inherit;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;
-  color:var(--fg);line-height:1}
-.prob-cell.checked .prob-num{color:#fff}
-.prob-cell.has-yt .prob-num{color:#fff}
-.prob-cell.checked.has-yt .prob-num{color:#fff}
-.prob-yt-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.85);margin-top:3px;display:none}
+.prob-cell{position:relative;min-height:40px;border-radius:10px;background:var(--surface);border:1px solid var(--control);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 2px;min-width:0;
+  cursor:pointer;transition:border-color .2s,transform .2s var(--spring)}
+.prob-cell:hover{border-color:var(--accent)}
+.prob-cell:active{transform:scale(.94)}
+.prob-cell.checked{background:var(--accent);border-color:var(--accent)}
+.prob-cell.has-yt{background:var(--mint-fill);border-color:var(--mint-fill)}
+.prob-num{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1}
+.prob-cell.checked .prob-num,.prob-cell.has-yt .prob-num{color:#fff}
+.prob-yt-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.9);margin-top:4px;display:none}
 .prob-cell.has-yt .prob-yt-dot{display:block}
-/* 영상 있으면 클릭 가능 커서 강조 */
-.prob-cell.has-yt{cursor:pointer}
+.prob-x{position:absolute;top:0;right:0;width:18px;height:18px;cursor:pointer}
+.prob-x:before,.prob-x:after,.yt-close:before,.yt-close:after{content:'';position:absolute;left:50%;top:50%;width:8px;height:1.5px;border-radius:1px;background:#fff;transform:translate(-50%,-50%) rotate(45deg)}
+.prob-x:after,.yt-close:after{transform:translate(-50%,-50%) rotate(-45deg)}
 
-/* YOUTUBE PANEL */
-.yt-panel{background:var(--surface);border-radius:18px;padding:16px;
-  box-shadow:0 4px 24px var(--shadow);margin-bottom:14px}
-.yt-title{font-family:inherit;font-size:10px;font-weight:700;
-  letter-spacing:1.5px;color:var(--fg3);text-transform:uppercase;margin-bottom:10px}
-.yt-item{display:flex;align-items:center;gap:10px;padding:10px 12px;
-  background:rgba(232,121,90,.06);border:1.5px solid rgba(232,121,90,.2);
-  border-radius:12px;margin-bottom:8px;text-decoration:none}
-.yt-item:hover{background:rgba(232,121,90,.12)}
-.yt-play{width:32px;height:32px;background:var(--warm);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.yt-play::after{content:'▶';color:#fff;font-size:10px;margin-left:2px}
-.yt-info{flex:1}
-.yt-prob{font-family:inherit;font-size:10px;color:#8B7FD9;font-variant-numeric:tabular-nums;
-  font-weight:600;letter-spacing:.5px;margin-bottom:1px}
-.yt-empty{font-size:13px;color:var(--fg3);font-style:italic;padding:8px 0;font-weight:300}
-
-/* LEGEND */
-.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg2)}
-.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-
-/* EMPTY */
-.empty-msg{text-align:center;padding:32px;color:var(--fg3);font-size:13px;font-weight:300}
-
-/* 범위 선택 */
-.range-bar{background:var(--surface);border-radius:14px;padding:12px 14px;
-  box-shadow:0 2px 12px var(--shadow);margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.range-inp{width:64px;padding:7px 8px;border:1.5px solid var(--border);border-radius:8px;
-  font-size:13px;font-family:inherit;color:var(--fg);text-align:center;outline:none}
-.range-inp:focus{border-color:var(--p1)}
-.range-btn{padding:7px 12px;border:none;border-radius:8px;font-size:12px;font-weight:700;
-  cursor:pointer;font-family:inherit}
-.range-btn.check{background:rgba(239,68,68,.12);color:#ef4444}
-.range-btn.uncheck{background:rgba(120,100,200,.1);color:var(--p1)}
-.range-btn.all-uncheck{background:var(--bg);color:var(--fg3)}
-/* 섹션 그룹 */
-.sec-header{font-size:10px;font-weight:700;
-  letter-spacing:1.5px;color:var(--fg3);text-transform:uppercase;
-  padding:6px 0 4px;margin-top:10px}
-.sec-header:first-child{margin-top:0}
-/* 영상 바텀시트 */
+/* 바텀시트 (떠 있는 창이라 그림자 허용) */
 .yt-sheet{position:fixed;inset:0;z-index:900;display:none;align-items:flex-end;justify-content:center}
 .yt-sheet.open{display:flex}
-.yt-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5)}
-.yt-panel{position:relative;z-index:1;background:#fff;border-radius:24px 24px 0 0;
-  width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:20px 18px calc(28px + env(safe-area-inset-bottom));
-  animation:slideUp .22s ease}
+.yt-overlay{position:absolute;inset:0;background:rgba(45,38,80,.5)}
+.yt-panel{position:relative;z-index:1;background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;
+  padding:14px 20px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px -12px rgba(45,38,80,.35);animation:slideUp .25s cubic-bezier(.34,1.2,.64,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.yt-sheet-handle{width:36px;height:4px;background:var(--border);border-radius:4px;
-  margin:0 auto 16px}
-.yt-embed{width:100%;aspect-ratio:16/9;border-radius:12px;border:none;margin-top:10px}
-.yt-close{flex-shrink:0;width:30px;height:30px;border:none;border-radius:50%;background:#F2EFFC;color:#7B76A8;
-  font-size:13px;font-family:inherit;cursor:pointer;transition:.25s cubic-bezier(.34,1.56,.64,1)}
+.yt-sheet-handle{width:36px;height:4px;background:var(--control);border-radius:4px;margin:0 auto 16px}
+.sheet-head{display:flex;align-items:center;gap:8px}
+.sheet-title{flex:1;min-width:0;font-size:17px;font-weight:700;color:var(--ink);letter-spacing:-.3px;margin-bottom:4px}
+.sheet-sub{font-size:13px;color:var(--muted);margin-bottom:12px}
+.sheet-label{font-size:13px;font-weight:700;color:var(--mint);margin-bottom:6px}
+.sheet-toggle{flex:none;height:32px;border:1px solid var(--control);background:var(--surface);color:var(--accent-ink);border-radius:99px;
+  padding:0 14px;font-size:13px;font-weight:700;cursor:pointer}
+.sheet-toggle.on{border-color:var(--rose-line);color:var(--rose)}
+.yt-close{position:relative;flex:none;width:36px;height:36px;border:none;border-radius:12px;background:var(--panel);color:var(--accent-ink);
+  font-size:14px;cursor:pointer;transition:transform .2s var(--spring)}
 .yt-close:active{transform:scale(.9)}
+.yt-close:before,.yt-close:after{width:12px;background:var(--accent-ink)}
+.yt-embed{display:block;width:100%;aspect-ratio:16/9;border-radius:12px;border:none;margin-top:6px;margin-bottom:16px}
+.fq-form{display:flex;flex-direction:column;gap:8px;margin:8px 0 14px}
+.fq-row{display:flex;gap:8px}
+.fq-row .inp{flex:1;min-width:0}
+.fq-photo{flex:1;height:48px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--control);border-radius:var(--r-inner);
+  font-size:14px;font-weight:700;color:var(--accent-ink);background:var(--panel);cursor:pointer}
+.fq-thumb{display:block;width:100%;max-height:180px;object-fit:contain;border-radius:12px;background:var(--panel)}
+.btn-ghost{height:48px;border:1px solid var(--control);background:var(--surface);color:var(--accent-ink);border-radius:var(--r-inner);
+  padding:0 16px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-ghost.danger{border-color:var(--rose-line);color:var(--rose)}
+.btn-ghost.wide{width:100%}
 
 /* ── 하단 탭바 (student.html / textbook_q.html 동일 · 수정 시 양쪽 함께 교체) ── */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:800;display:flex;
@@ -250,16 +211,15 @@ html.preauth #splash{display:flex}
 <body>
 <div id="splash"><i></i></div>
 
-
 <!-- LOGIN -->
 <div id="loginPage">
   <div class="lbox">
-    <div class="ico">📖</div>
-    <h1>교재 질문</h1>
-    <div class="sub">학생 비밀번호를 입력하세요</div>
+    <div class="ico">S</div>
+    <div class="lbox-t" role="heading" aria-level="1">교재 질문</div>
+    <p class="sub">학생 비밀번호를 입력하세요</p>
     <input class="inp" type="password" id="pwInp" placeholder="비밀번호 입력" autocomplete="off"
       onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn-pri" onclick="doLogin()">확인 →</button>
+    <button class="btn-pri" onclick="doLogin()">로그인</button>
     <div class="errmsg" id="errLogin"></div>
     <a href="./main.html" class="back-link">← 홈으로</a>
   </div>
@@ -267,133 +227,100 @@ html.preauth #splash{display:flex}
 
 <!-- APP -->
 <div id="app">
-  <div class="hdr">
+  <div class="app-bar">
+    <span class="app-mark">S</span><span class="app-name">성민T<span>학생</span></span>
     <button class="logout-btn" onclick="doLogout()">로그아웃</button>
-    <div class="hdr-inner">
-      <div class="hdr-badge">Student</div>
-      <div class="hdr-name" id="hdrName">-</div>
-      <div class="hdr-sub" id="hdrSub">교재 질문</div>
+  </div>
+  <div class="hdr">
+    <h1 class="hdr-name" id="hdrName">-</h1>
+    <div class="hdr-sub" id="hdrSub">교재 질문</div>
+  </div>
+
+  <!-- 교재 없을 때 -->
+  <div id="noTbMsg" style="display:none">
+    <div class="card"><p class="empty-msg">배정된 교재가 없어요.<br>선생님께 교재 배정을 요청하세요.</p></div>
+  </div>
+
+  <!-- 교재 선택 -->
+  <div id="tbSelectWrap">
+    <div class="card">
+      <h2 class="card-title">교재 선택</h2>
+      <div id="tbSelectList"></div>
     </div>
   </div>
 
-  <div class="body">
-    <!-- 교재 없을 때 -->
-    <div id="noTbMsg" style="display:none">
-      <div class="card">
-        <div class="empty-msg">배정된 교재가 없습니다<br><br>선생님께 교재 배정을 요청하세요</div>
-      </div>
-    </div>
-
-    <!-- 교재 선택 (여러 권 배정된 경우) -->
-    <div id="tbSelectWrap">
-      <div class="card">
-        <div class="card-title">교재 선택</div>
-        <div id="tbSelectList" style="margin-top:8px"></div>
-      </div>
-    </div>
-
-    <!-- 기타 질문 입력 바텀시트 -->
-    <div class="yt-sheet" id="freeQSheet" onclick="closeFreeQSheet(event)">
-      <div class="yt-overlay"></div>
-      <div class="yt-panel">
-        <div class="yt-sheet-handle"></div>
-        <div class="card-title" style="margin-bottom:12px">교재에 없는 문제 질문하기</div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
-          <input id="fqBook" type="text" placeholder="책 이름 (선택)" maxlength="40"
-            style="padding:9px 12px;border:1.5px solid rgba(120,100,200,.2);border-radius:10px;font-size:13px;font-family:inherit;background:#F8F6FF;color:#3D3860;outline:none">
-          <div style="display:flex;gap:8px;width:100%">
-            <input id="fqPage" type="number" placeholder="페이지" min="1"
-              style="width:0;flex:1;min-width:0;padding:9px 12px;border:1.5px solid rgba(120,100,200,.2);border-radius:10px;font-size:13px;font-family:inherit;background:#F8F6FF;color:#3D3860;outline:none">
-            <input id="fqProb" type="text" placeholder="문제번호" maxlength="10"
-              style="width:0;flex:1;min-width:0;padding:9px 12px;border:1.5px solid rgba(120,100,200,.2);border-radius:10px;font-size:13px;font-family:inherit;background:#F8F6FF;color:#3D3860;outline:none">
-          </div>
-          <!-- 이미지 업로드 -->
-          <div style="display:flex;align-items:center;gap:8px">
-            <label for="fqImg" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px dashed rgba(120,100,200,.3);border-radius:10px;font-size:13px;color:#8B7FD9;cursor:pointer;background:#F8F6FF;flex:1;justify-content:center"> 사진 첨부
-            </label>
-            <input id="fqImg" type="file" accept="image/*" capture="environment" style="display:none" onchange="onFqImgSelect(event)">
-            <button id="fqImgClear" onclick="clearFqImg()" style="display:none;border:none;background:rgba(239,68,68,.1);color:#ef4444;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">✕ 삭제</button>
-          </div>
-          <div id="fqImgPreview" style="display:none">
-            <img id="fqImgThumb" style="width:100%;max-height:160px;object-fit:contain;border-radius:10px;background:#FBFAFF">
-          </div>
+  <!-- 문제 목록 -->
+  <div id="probSection" style="display:none">
+    <div class="card">
+      <div class="prob-head">
+        <div>
+          <h2 class="card-title">문제 목록</h2>
+          <button class="tb-current" onclick="toggleProbBody()"><span id="tbNameDisplay"></span><span id="probCollapseBtn" class="tb-toggle">▲</span></button>
         </div>
-        <button onclick="submitFreeQ()" style="width:100%;padding:10px;background:linear-gradient(135deg,#A89BEB,#8B7FD9);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">등록</button>
-        <button onclick="submitFreeQ()" style="width:100%;padding:12px;background:linear-gradient(135deg,#A89BEB,#8B7FD9);border:none;border-radius:13px;color:#fff;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">등록</button>
+        <div id="qCntBadge" class="q-badge">대기 없음</div>
       </div>
-    </div>
-    <div id="fqMyList" style="display:none"></div>
-
-    <!-- 영상 바텀시트 -->
-    <div class="yt-sheet" id="ytSheet" onclick="closeYtSheet(event)">
-      <div class="yt-overlay"></div>
-      <div class="yt-panel">
-        <div class="yt-sheet-handle"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
-          <div id="ytSheetTitle" style="flex:1;min-width:0;font-size:15px;font-weight:700;color:#1E1B3A"></div>
-          <button id="ytSheetToggleBtn" onclick="toggleProbFromSheet()" style="flex-shrink:0;border:none;border-radius:99px;padding:5px 13px;font-size:12px;font-weight:700;cursor:pointer;transition:.15s"></button>
-          <button class="yt-close" onclick="closeYtSheet()" aria-label="닫기">✕</button>
-        </div>
-        <div id="ytSheetSub" style="font-size:12px;color:#6A6688;margin-bottom:8px"></div>
-        <iframe id="ytSheetFrame" class="yt-embed" allowfullscreen></iframe>
-      </div>
-    </div>
-
-    <!-- 기타질문 상세 바텀시트 -->
-    <div class="yt-sheet" id="freeQDetailSheet" onclick="closeFreeQDetailSheet(event)">
-      <div class="yt-overlay"></div>
-      <div class="yt-panel">
-        <div class="yt-sheet-handle"></div>
-        <div id="fqDetailTitle" style="font-size:15px;font-weight:700;color:#1E1B3A;margin-bottom:4px"></div>
-        <div id="fqDetailInfo" style="font-size:13px;color:#6A6688;margin-bottom:12px"></div>
-        <div id="fqDetailImgWrap" style="display:none;margin-bottom:14px">
-          <img id="fqDetailImg" style="width:100%;border-radius:12px;object-fit:contain;background:#FBFAFF">
-        </div>
-        <div id="fqDetailYt" style="display:none;margin-bottom:16px">
-          <div style="font-size:12px;font-weight:600;color:#3D3860;margin-bottom:6px">▶ 풀이 영상</div>
-          <iframe id="fqDetailFrame" class="yt-embed" allowfullscreen></iframe>
-        </div>
-        <button onclick="deleteFreeQFromSheet()" style="width:100%;padding:10px;border:none;border-radius:10px;background:rgba(239,68,68,.1);color:#ef4444;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">삭제</button>
-      </div>
-    </div>
-
-    <!-- 문제 목록 -->
-    <div id="probSection" style="display:none">
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div>
-            <div class="card-title" style="margin-bottom:4px">문제 목록</div>
-            <div style="display:inline-flex;align-items:center;gap:7px;cursor:pointer" onclick="toggleProbBody()">
-              <div id="tbNameDisplay" style="font-size:15px;font-weight:800;color:#3D3860;letter-spacing:-.3px"></div>
-              <span id="probCollapseBtn" class="tb-toggle">▲</span>
-            </div>
-          </div>
-          <div id="qCntBadge" style="font-size:11px;font-weight:700;color:#8B7FD9;
-            background:rgba(139,127,217,.10);padding:5px 12px;border-radius:99px;
-            font-variant-numeric:tabular-nums;white-space:nowrap">대기 없음</div>
-        </div>
-        <div id="probBody">
-
+      <div id="probBody">
         <div class="legend">
-          <div class="legend-item">
-            <div class="legend-dot" style="background:rgba(239,68,68,.15);border:1.5px solid #ef4444"></div> 내 질문
-          </div>
-          <div class="legend-item">
-            <div class="legend-dot" style="background:rgba(86,160,138,.15);border:1.5px solid #56A08A"></div> 영상 있음 (클릭→시청)
-          </div>
+          <span class="legend-item"><i class="legend-dot q"></i>내 질문</span>
+          <span class="legend-item"><i class="legend-dot yt"></i>풀이 영상 (눌러서 보기)</span>
         </div>
         <div class="myq-card" id="myQCard"></div>
         <div id="probGrid"></div>
       </div>
-
-
-      <!-- 유튜브 영상 -->
-      <div class="yt-panel" id="ytPanel" style="display:none">
-        <div class="yt-title">▶ 풀이 영상</div>
-        <div id="ytList"></div>
-      </div>
-      </div><!-- /probBody -->
     </div>
+  </div>
+</div>
+
+<!-- 교재에 없는 문제 질문 -->
+<div class="yt-sheet" id="freeQSheet" onclick="closeFreeQSheet(event)">
+  <div class="yt-overlay"></div>
+  <div class="yt-panel">
+    <div class="yt-sheet-handle"></div>
+    <h2 class="sheet-title">교재에 없는 문제 질문하기</h2>
+    <div class="fq-form">
+      <input class="inp" id="fqBook" type="text" placeholder="책 이름 (선택)" maxlength="40">
+      <div class="fq-row">
+        <input class="inp" id="fqPage" type="number" placeholder="페이지" min="1">
+        <input class="inp" id="fqProb" type="text" placeholder="문제 번호" maxlength="10">
+      </div>
+      <div class="fq-row">
+        <label for="fqImg" class="fq-photo">사진 첨부</label>
+        <input id="fqImg" type="file" accept="image/*" capture="environment" hidden onchange="onFqImgSelect(event)">
+        <button id="fqImgClear" class="btn-ghost danger" onclick="clearFqImg()" style="display:none">사진 빼기</button>
+      </div>
+      <div id="fqImgPreview" style="display:none"><img id="fqImgThumb" class="fq-thumb" alt="첨부한 사진"></div>
+    </div>
+    <button class="btn-pri" onclick="submitFreeQ()">등록</button>
+  </div>
+</div>
+
+<!-- 풀이 영상 -->
+<div class="yt-sheet" id="ytSheet" onclick="closeYtSheet(event)">
+  <div class="yt-overlay"></div>
+  <div class="yt-panel">
+    <div class="yt-sheet-handle"></div>
+    <div class="sheet-head">
+      <h2 id="ytSheetTitle" class="sheet-title"></h2>
+      <button id="ytSheetToggleBtn" class="sheet-toggle" onclick="toggleProbFromSheet()"></button>
+      <button class="yt-close" onclick="closeYtSheet()" aria-label="닫기"></button>
+    </div>
+    <p id="ytSheetSub" class="sheet-sub"></p>
+    <iframe id="ytSheetFrame" class="yt-embed" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- 교재 외 질문 상세 -->
+<div class="yt-sheet" id="freeQDetailSheet" onclick="closeFreeQDetailSheet(event)">
+  <div class="yt-overlay"></div>
+  <div class="yt-panel">
+    <div class="yt-sheet-handle"></div>
+    <h2 id="fqDetailTitle" class="sheet-title"></h2>
+    <p id="fqDetailInfo" class="sheet-sub"></p>
+    <div id="fqDetailYt" style="display:none">
+      <div class="sheet-label">풀이 영상</div>
+      <iframe id="fqDetailFrame" class="yt-embed" allowfullscreen></iframe>
+    </div>
+    <button class="btn-ghost danger wide" onclick="deleteFreeQFromSheet()">질문 삭제</button>
   </div>
 </div>
 
@@ -452,8 +379,6 @@ function doLogout(){
   document.getElementById('pwInp').value='';
   document.getElementById('errLogin').textContent='';
 }
-
-// 플래너 탭에서 넘어온 경우 세션으로 자동 로그인
 
 // preauth 해제: 자동 로그인 성공/실패가 확정되면 스플래시를 걷는다
 function endPreauth(showLogin){
@@ -533,8 +458,6 @@ function onTbLoaded(){
   document.getElementById('tbSelectList').innerHTML=html;
 }
 
-
-
 // 문제 목록(교재 단위) 접기/펼치기
 function toggleProbBody(){
   var body=document.getElementById('probBody');
@@ -580,7 +503,6 @@ function renderGrid(tb){
     if(!isNaN(na)&&!isNaN(nb)&&String(na)===a&&String(nb)===b) return na-nb;
     return a.localeCompare(b,'ko');
   });
-  activeTbNums=nums;
   var html='';
 
   // 단원과 무관하게 50문항 단위로 끊어서 접이식 구성
@@ -642,22 +564,22 @@ function renderMyQ(tb){
   var shownF = _myqExpand ? fresh : fresh.slice(0,5);
   shownF.forEach(function(q){
     h+='<div class="myq-row new" onclick="'+(q.fq?'openFreeQDetail(\''+q.fq+'\')':'openYtSheet(\''+q.n+'\')')+'">'+
-       '<span class="myq-ico">▶</span><div style="flex:1">'+
+       '<span class="myq-ico">▶</span><div class="myq-body">'+
        '<div class="myq-t">'+q.lb+'</div>'+
        '<div class="myq-sub">'+(q.pg?q.pg+' · ':'')+'영상 도착</div></div></div>';
   });
   if(fresh.length>5 && !_myqExpand)
     h+='<button class="myq-more" onclick="_myqExpand=true;renderMyQ(tbData[activeTbId])">영상 '+(fresh.length-5)+'개 더 보기</button>';
   if(waiting.length){
-    h+='<div class="myq-cap" style="margin-top:13px;color:#C4C0DA">답변 대기 '+waiting.length+'개</div>';
+    h+='<div class="myq-cap wait">답변 대기 '+waiting.length+'개</div>';
     waiting.slice(0,3).forEach(function(q){
       h+='<div class="myq-row" onclick="'+(q.fq?'openFreeQDetail(\''+q.fq+'\')':'toggleProb(\''+q.n+'\')')+'">'+
-         '<span class="myq-ico" style="color:#8B7FD9">'+(q.img?'▣':'?')+'</span><div style="flex:1">'+
+         '<span class="myq-ico q">'+(q.img?'▣':'?')+'</span><div class="myq-body">'+
          '<div class="myq-t">'+q.lb+'</div>'+
          '<div class="myq-sub">'+(q.pg?q.pg+' · ':'')+(q.fq?'답변 대기':'눌러서 질문 해제')+'</div></div></div>';
     });
     if(waiting.length>3)
-      h+='<div class="myq-empty" style="margin-top:8px">나머지 '+(waiting.length-3)+'개는 아래 단원에서 보라색으로 표시돼요</div>';
+      h+='<div class="myq-empty">나머지 '+(waiting.length-3)+'개는 아래 단원에서 보라색으로 표시돼요</div>';
   }
   host.innerHTML=h+addBtn;
 }
@@ -687,7 +609,7 @@ function buildCell(num,p,displayNum){
   return '<div class="'+cls+'" onclick="'+action+'" data-num="'+num+'">'+
     '<div class="prob-num">'+displayNum+'</div>'+
     '<div class="prob-yt-dot"></div>'+
-    (isChecked&&hasYt?'<div style="position:absolute;top:3px;right:3px;font-size:8px;cursor:pointer" onclick="event.stopPropagation();toggleProb(\''+num+'\')" title="체크 해제">✕</div>':'')+
+    (isChecked&&hasYt?'<div class="prob-x" onclick="event.stopPropagation();toggleProb(\''+num+'\')" title="체크 해제" aria-label="체크 해제"></div>':'')+
     '</div>';
 }
 
@@ -716,7 +638,6 @@ function toggleProb(num){
   updateQCnt();
 }
 
-var activeTbNums=[];
 
 var ytSheetNum=null;
 // 영상을 연 시각을 기록. ytAt(등록 시각) > seenAt 이면 '새 영상'으로 본다.
@@ -757,9 +678,8 @@ function updateYtSheetBtn(){
   var btn=document.getElementById('ytSheetToggleBtn');
   if(!btn||ytSheetNum===null) return;
   var isChecked=!!myQuestions[ytSheetNum];
-  btn.textContent=isChecked?'✕ 체크 해제':'✓ 체크하기';
-  btn.style.background=isChecked?'rgba(239,68,68,.12)':'rgba(86,160,138,.15)';
-  btn.style.color=isChecked?'#ef4444':'#56A08A';
+  btn.textContent=isChecked?'질문 해제':'질문으로 표시';
+  btn.className='sheet-toggle'+(isChecked?' on':'');
 }
 function toggleProbFromSheet(){
   if(ytSheetNum===null) return;
@@ -831,35 +751,19 @@ function submitFreeQ(){
 function loadFreeQList(){
   if(!currentStuId) return;
   db.ref('smFreeQuestions/'+currentStuId).orderByChild('createdAt').once('value',function(s){
-    _freeQDetailData={};
     var items=s.val()||{};
-    var arr=Object.entries(items).sort(function(a,b){return b[1].createdAt-a[1].createdAt;});
-    arr.forEach(function(e){_freeQDetailData[e[0]]=e[1];});
-    _freeQAll={};
-    arr.forEach(function(e){ _freeQAll[e[0]]=e[1]; });
+    _freeQDetailData={}; _freeQAll={};
+    Object.entries(items).sort(function(a,b){return b[1].createdAt-a[1].createdAt;})
+      .forEach(function(e){ _freeQDetailData[e[0]]=e[1]; _freeQAll[e[0]]=e[1]; });
     if(activeTbId && tbData[activeTbId]){ renderMyQ(tbData[activeTbId]); updateQCnt(); }
-    var el=document.getElementById('fqMyList');
-    if(!el) return;
-    if(!arr.length){el.innerHTML='<div style="font-size:12px;color:#A8A4C0;text-align:center;padding:8px">등록된 질문이 없습니다</div>';return;}
-    el.innerHTML=arr.map(function(entry){
-      var id=entry[0],q=entry[1];
-      var d=new Date(q.createdAt);
-      var ds=(d.getMonth()+1)+'/'+(d.getDate())+' '+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
-      var hasImg=!!q.hasImage;
-      return '<div onclick="openFreeQDetail(\''+id+'\')" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#F8F6FF;border-radius:10px;margin-bottom:6px">'+
-        '<div><div style="font-size:13px;font-weight:600;color:#3D3860">'+(q.bookName||'(사진 질문)')+(hasImg?' ':'')+' </div>'+
-        '<div style="font-size:11px;color:#6A6688">'+(q.page?q.page+'p · ':'')+(q.probNum?q.probNum+'번 ':'')+' <span style="color:#B0AACF;margin-left:4px">'+ds+'</span></div></div>'+
-        '<span style="color:#C4B9F0;font-size:13px;padding:4px">›</span>'+
-      '</div>';
-    }).join('');
   });
 }
 function openFreeQDetail(id){
   _freeQDetailId=id;
   var q=_freeQDetailData[id]||{};
   if(q.youtubeUrl) markFreeQSeen(id);
-  document.getElementById('fqDetailTitle').textContent=q.bookName||'';
-  document.getElementById('fqDetailInfo').textContent=(q.page||'')+'p · '+(q.probNum||'')+'번';
+  document.getElementById('fqDetailTitle').textContent=q.bookName||'사진 질문';
+  document.getElementById('fqDetailInfo').textContent=[q.page?q.page+'p':'',q.probNum?q.probNum+'번':''].filter(Boolean).join(' · ')||(q.youtubeUrl?'풀이 영상이 도착했어요':'답변 대기 중');
   var ytWrap=document.getElementById('fqDetailYt');
   var ytFrame=document.getElementById('fqDetailFrame');
   if(q.youtubeUrl){
@@ -900,34 +804,6 @@ function updateQCnt(){
     if(!(_freeQAll[id]||{}).youtubeUrl) cnt++;
   });
   document.getElementById('qCntBadge').textContent = cnt ? (cnt+'개 대기') : '대기 없음';
-}
-
-function renderYtPanel(tb){
-  var problems=tb.problems||{};
-  var ytItems=Object.entries(problems)
-    .filter(function([,p]){return !!(p&&p.youtubeUrl)})
-    .sort(function([a],[b]){
-      var na=parseFloat(a), nb=parseFloat(b);
-      if(!isNaN(na)&&!isNaN(nb)) return na-nb;
-      return a.localeCompare(b);
-    });
-
-  if(!ytItems.length){
-    document.getElementById('ytPanel').style.display='none';
-    return;
-  }
-  document.getElementById('ytPanel').style.display='block';
-  var html='';
-  ytItems.forEach(function([num,p]){
-    html+='<a class="yt-item" href="'+p.youtubeUrl+'" target="_blank" rel="noopener">'+
-      '<div class="yt-play"></div>'+
-      '<div class="yt-info">'+
-        '<div class="yt-prob">'+num+'번 문제 풀이</div>'+
-        '<div style="font-size:12px;color:var(--fg2);font-weight:300">'+(p.title||'풀이 영상')+'</div>'+
-      '</div>'+
-      '</a>';
-  });
-  document.getElementById('ytList').innerHTML=html;
 }
 </script>
 
