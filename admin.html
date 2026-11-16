@@ -10,6 +10,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="sm-auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
 /* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
@@ -783,7 +785,6 @@ textarea.inp{resize:vertical;min-height:68px}
 </div>
 <div class="lightbox" id="lightbox" onclick="if(event.target===this)closeLightbox()"><button class="lightbox-close" onclick="closeLightbox()">✕</button><img id="lbImg" style="max-width:100%;max-height:90vh;border-radius:10px"></div>
 <script>
-const HASH='9e0bc0a9aa374eab9ae10383ab67c9fadb1e2aa69a1d54555a7dff0670678bda';
 let db,uid_=null,mode='student',students={},sessions={},consults={},planners={};
 let calYear,calMonth;
 
@@ -794,7 +795,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   try{if(!firebase.apps.length)firebase.initializeApp(SM_CONFIG);db=firebase.database();}
   catch(e){alert('Firebase 오류: '+e.message);return;}
-  if(sessionStorage.getItem('smAdmin')==='1')showApp();
+  // 새로고침: 로그인 상태가 남아 있을 때만 바로 들어간다
+  smSession(['admin']).then(function(ses){ if(ses) showApp(); });
 });
 
 async function notifyDeploy(){
@@ -1516,12 +1518,15 @@ function answersEqual(val,correct){
 }
 async function doLogin(){
   const pw=document.getElementById('pwIn').value;if(!pw)return;
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
-  const h=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  if(h===HASH){sessionStorage.setItem('smAdmin','1');showApp();}
-  else document.getElementById('lerr').textContent='비밀번호가 올바르지 않습니다';
+  // 비밀번호 확인은 로그인 서버가 한다
+  try{
+    await smLogin('admin',{pw:pw});
+    showApp();
+  }catch(e){
+    document.getElementById('lerr').textContent=e.message;
+  }
 }
-function logout(){sessionStorage.removeItem('smAdmin');location.reload();}
+function logout(){smLogout().then(function(){location.reload();});}
 function showApp(){
   document.getElementById('loginPage').style.display='none';
   document.getElementById('app').style.display='block';

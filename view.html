@@ -10,6 +10,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="sm-auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
 /* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
@@ -367,22 +369,18 @@ async function doParentLogin(){
   if(!pw){err.textContent='비밀번호를 입력하세요';return;}
   err.textContent='';btn.disabled=true;btn.textContent='확인 중...';
   try{
-    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
-    const hash=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    const snap=await db.ref('smStudents').get();
-    const all=snap.val()||{};
-    const match=Object.values(all).find(s=>s.parentPwHash===hash);
-    if(match){
-      // Hide login, show loading, load data
-      document.getElementById('loginPage').style.display='none';
-      document.getElementById('load').style.display='flex';
-      const matchEntry=Object.entries(snap.val()||{}).find(([,s])=>s.parentPwHash===hash);loadStudentData(matchEntry[0],matchEntry[1]);
-    }else{
-      err.textContent='비밀번호가 올바르지 않습니다';
+    // 비밀번호 확인은 로그인 서버가 한다 (학생 명단을 내려받지 않는다)
+    const r=await smLogin('parent',{pw:pw});
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('load').style.display='flex';
+    loadStudentData(r.sid,r.profile||{});
+  }catch(e){
+    err.textContent=e.message;
+    if(e.code===401){
       document.getElementById('pwIn').value='';
       document.getElementById('pwIn').focus();
     }
-  }catch(e){err.textContent='오류: '+e.message;}
+  }
   btn.disabled=false;btn.textContent='확인 →';
 }
 
@@ -395,13 +393,13 @@ async function loadPage(){
     return;
   }
   try{
-    // ✅ client-side 필터링 (인덱스 불필요)
-    const snap=await db.ref('smStudents').get();
-    const all=snap.val()||{};
-    const entry=Object.entries(all).find(([,s])=>s.token===token);
-    if(!entry){showErr('학생을 찾을 수 없습니다','링크가 만료되었거나 잘못된 링크입니다.');return;}
-    loadStudentData(entry[0], entry[1]);
-  }catch(e){showErr('오류 발생',''+e.message);}
+    // 링크 토큰 확인도 로그인 서버가 한다
+    const r=await smLogin('parent',{token:token});
+    loadStudentData(r.sid, r.profile||{});
+  }catch(e){
+    if(e.code===401) showErr('학생을 찾을 수 없습니다','링크가 만료되었거나 잘못된 링크입니다.');
+    else showErr('오류 발생',''+e.message);
+  }
 }
 
 function loadStudentData(stuId, stu){

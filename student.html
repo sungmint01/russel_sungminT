@@ -19,6 +19,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="sm-auth.js"></script>
 <style>
 /* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
 @font-face{font-family:'GmarketSans';font-weight:100 500;font-style:normal;font-display:swap;src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff')}
@@ -539,26 +541,23 @@ async function doLogin() {
   if (!pw) return;
   const err = document.getElementById('lerr');
   err.textContent = '';
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-  const hash = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
-  const snap = await db.ref('smStudents').get();
-  const all = snap.val() || {};
-  const entry = Object.entries(all).find(([,s]) => s.studentPwHash === hash);
-  if (entry) {
-    stuId = entry[0];
-    stuData = entry[1];
+  // 비밀번호 확인은 로그인 서버가 한다 (학생 명단을 내려받지 않는다)
+  try {
+    const r = await smLogin('student', { pw: pw });
+    stuId = r.sid;
+    stuData = r.profile || {};
     sessionStorage.setItem('stuId', stuId);
-    sessionStorage.setItem('stuHash', hash);
+    sessionStorage.setItem('stuHash', '1');
     showApp();
-  } else {
-    err.textContent = '비밀번호가 올바르지 않습니다';
+  } catch (e) {
+    err.textContent = e.message;
   }
 }
 
 function logout() {
   sessionStorage.removeItem('stuId');
   sessionStorage.removeItem('stuHash');
-  location.reload();
+  smLogout().then(function () { location.reload(); });
 }
 
 // 교재 질문 탭 배지: 영상이 아직 없는 질문 수
@@ -1429,10 +1428,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!sid || !hash) { endPreauth(false); return; }
   try {
     if (!db) throw new Error('no db');
-    const snap = await db.ref(`smStudents/${sid}`).get();
-    const s = snap.val();
-    if (s && s.studentPwHash === hash) {
-      stuId = sid; stuData = s;
+    const ses = await smSession(['student']);
+    if (ses && ses.sid === sid) {
+      stuId = sid; stuData = ses.profile || {};
       showApp();          // 내부에서 endPreauth(false)
     } else {
       endPreauth(true);   // 세션 무효 → 로그인 화면

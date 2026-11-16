@@ -38,6 +38,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>emailjs.init("9834V_7luPj7hfNIz");</script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -57,10 +58,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
+<script src="sm-auth.js"></script>
 
 <script type="text/babel" data-presets="react">
 const { useState, useEffect, useRef } = React;
-const TEACHER_PW = "1340";
 const SUBJECTS = ["공통수학1","공통수학2","대수(수1)","미적분1(수2)","확통","기하","미적분2"];
 
 // 과목별 색상 (배경, 텍스트)
@@ -346,9 +347,9 @@ function App(){
     }
   };
 
-  const login=()=>{
-    if(pw===TEACHER_PW){setAuthed(true);setPwErr(false);}
-    else{setPwErr(true);setPw("");}
+  const login=async()=>{
+    try{ await smLogin("teacher",{pw:pw}); setAuthed(true); setPwErr(false); }
+    catch(e){ setPwErr(true); setPw(""); }
   };
 
   const onReply=async(qId)=>{

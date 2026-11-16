@@ -11,6 +11,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="sm-auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -363,21 +365,19 @@ async function clinicLogin(){
   if(!pw){err.textContent='비밀번호를 입력하세요';return;}
   err.textContent='';btn.disabled=true;btn.textContent='확인 중...';
   try{
-    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
-    const hash=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    // 조교: 1q2w3e
-    const target=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('1q2w3e'));
-    const targetHash=[...new Uint8Array(target)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(hash===targetHash){
-      document.getElementById('loginPage').style.display='none';
-      document.getElementById('mainWrap').style.display='';
-      loadData();
-    }else{
-      err.textContent='비밀번호가 올바르지 않습니다';
+    // 비밀번호 확인은 로그인 서버가 한다. 학생 명단(이름·반)도 여기서 받는다
+    const r=await smLogin('ta',{pw:pw});
+    _roster=r.roster||{};
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('mainWrap').style.display='';
+    loadData();
+  }catch(e){
+    err.textContent=e.message;
+    if(e.code===401){
       document.getElementById('clinicPwInp').value='';
       document.getElementById('clinicPwInp').focus();
     }
-  }catch(e){err.textContent='오류: '+e.message;}
+  }
   btn.disabled=false;btn.textContent='확인 →';
 }
 
@@ -387,6 +387,7 @@ function today(){
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 let db, allStudents={}, clinicData={}, selectedClinicId=null, selectedClinic=null;
+let _roster={};   // 로그인 서버가 준 학생 명단 {id:{name,cls}}
 let hwData_={};
 
 let currentStuId=null, currentStuName='', lastResult=null, focusedInput=null;
@@ -554,12 +555,11 @@ async function hwSubmit(){
 // ════ END 숙제 채점 JS ════
 
 async function loadData(){
-  const [stuSnap, clinicSnap, hwSnap] = await Promise.all([
-    db.ref('smStudents').get(),
+  const [clinicSnap, hwSnap] = await Promise.all([
     db.ref('smClinicSets').get(),
     db.ref('smHwSets').get()
   ]);
-  allStudents=stuSnap.val()||{};
+  allStudents=_roster||{};
   clinicData=clinicSnap.val()||{};
   hwSets=hwSnap.val()||{};
   renderClinicList();

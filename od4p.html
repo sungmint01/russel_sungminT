@@ -67,6 +67,7 @@
 <div id="root" style="display:none"></div>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.23.6/babel.min.js"></script>
@@ -75,6 +76,7 @@ const firebaseConfig={apiKey:"AIzaSyAN7K0-V9PPepqmcNq0qA1xg_Sr8n-xiu0",authDomai
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database();
 </script>
+<script src="sm-auth.js"></script>
 <script>
 // od4p login - plain JS before React
 window._od4pStudentName = "";
@@ -86,37 +88,24 @@ async function od4pLogin() {
   if (!pw) { err.textContent = "비밀번호를 입력하세요"; return; }
   err.textContent = ""; btn.disabled = true; btn.textContent = "확인 중...";
   try {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
-    const hash = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
-    // Check teacher password
-    const teacherBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("1340"));
-    const teacherHash = [...new Uint8Array(teacherBuf)].map(b => b.toString(16).padStart(2,"0")).join("");
-    if (hash === teacherHash) {
-      window._od4pStudentName = "__teacher__";
-      document.getElementById("loginPage").style.display = "none";
-      document.getElementById("root").style.display = "";
-      return;
-    }
-    // Check student password
-    const snap = await db.ref("smStudents").get();
-    const all = snap.val() || {};
-    const entry = Object.entries(all).find(([,s]) => s.studentPwHash === hash);
-    if (entry) {
-      window._od4pStudentName = entry[1].name || "학생";
-      document.getElementById("loginPage").style.display = "none";
-      document.getElementById("root").style.display = "";
-    } else {
-      err.textContent = "비밀번호가 올바르지 않습니다";
+    // 비밀번호 확인은 로그인 서버가 한다 (선생님 비밀번호 → 학생 비밀번호 순)
+    const r = await smLogin("od4p", { pw: pw });
+    window._od4pStudentName = r.role === "teacher" ? "__teacher__" : ((r.profile || {}).name || "학생");
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("root").style.display = "";
+    if (r.role === "teacher") return;
+  } catch(e) {
+    err.textContent = e.message;
+    if (e.code === 401) {
       document.getElementById("od4pPwInput").value = "";
       document.getElementById("od4pPwInput").focus();
     }
-  } catch(e) { err.textContent = "오류: " + e.message; }
+  }
   btn.disabled = false; btn.textContent = "확인 →";
 }
 </script>
 <script type="text/babel" data-presets="react">
 const {useState,useEffect,useRef,useMemo}=React;
-const TEACHER_PW="1340";
 // ── 수식 렌더링 컴포넌트 ─────────────────────────────
 function MathText({text, style}){
   const ref=useRef();
@@ -481,7 +470,7 @@ function TeacherApp(){
   const[selDate,setSelDate]=useState(todayKey());
   const[selSub,setSelSub]=useState(SUBJECTS[0]);
 
-  const login=()=>{if(pw===TEACHER_PW){setAuthed(true);setPwErr(false);}else{setPwErr(true);setPw("");}};
+  const login=async()=>{try{await smLogin("teacher",{pw:pw});setAuthed(true);setPwErr(false);}catch(e){setPwErr(true);setPw("");}};
 
   useEffect(()=>{
     if(!authed)return;

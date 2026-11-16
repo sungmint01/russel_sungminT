@@ -15,6 +15,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="sm-auth.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <style>
 /* G마켓 산스: 400~500 = Medium, 600~900 = Bold */
@@ -350,28 +352,26 @@ async function doLogin(){
   if(!pw){document.getElementById('errLogin').textContent='비밀번호를 입력하세요';return;}
   db=getDB();
   if(!db){document.getElementById('errLogin').textContent='서버 연결 실패';return;}
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
-  const hash=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  db.ref('smStudents').once('value',function(s){
-    const all=s.val()||{};
-    const entry=Object.entries(all).find(([,v])=>v.studentPwHash===hash);
-    if(!entry){
-      document.getElementById('errLogin').textContent='비밀번호가 올바르지 않습니다';
-      return;
-    }
-    currentStuId=entry[0];
-    currentStuName=entry[1].name;
-    document.getElementById('hdrSub').textContent=(entry[1].grade||'')+' · '+(entry[1].subj||'수학');
+  // 비밀번호 확인은 로그인 서버가 한다 (학생 명단을 내려받지 않는다)
+  try{
+    const r=await smLogin('student',{pw:pw});
+    const p=r.profile||{};
+    currentStuId=r.sid;
+    currentStuName=p.name||'';
+    document.getElementById('hdrSub').textContent=(p.grade||'')+' · '+(p.subj||'수학');
     try{
       sessionStorage.setItem('stuId',currentStuId);
-      sessionStorage.setItem('stuHash',hash);
+      sessionStorage.setItem('stuHash','1');
     }catch(e){}
     loadApp();
-  });
+  }catch(e){
+    document.getElementById('errLogin').textContent=e.message;
+  }
 }
 
 function doLogout(){
   try{ sessionStorage.removeItem('stuId'); sessionStorage.removeItem('stuHash'); }catch(e){}
+  smLogout();
   currentStuId=null; currentStuName=null; activeTbId=null;
   assignedTbIds=[]; tbData={}; myQuestions={};
   document.getElementById('app').style.display='none';
@@ -396,10 +396,10 @@ function tryAutoLogin(){
   if(!sid||!hash) return false;
   if(!db) db=getDB();          // 자동 로그인 시점에는 아직 db가 없다
   if(!db) return false;
-  db.ref('smStudents/'+sid).once('value',function(sn){
-    var v=sn.val();
-    if(!v||v.studentPwHash!==hash){ endPreauth(true); return; }
-    currentStuId=sid; currentStuName=v.name;
+  smSession(['student']).then(function(ses){
+    if(!ses||ses.sid!==sid){ endPreauth(true); return; }
+    var v=ses.profile||{};
+    currentStuId=sid; currentStuName=v.name||'';
     document.getElementById('hdrSub').textContent=(v.grade||'')+' · '+(v.subj||'수학');
     loadApp();
   }).catch(function(){ endPreauth(true); });
